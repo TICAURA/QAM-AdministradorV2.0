@@ -1,0 +1,72 @@
+<div class="container-fluid mb-4">
+
+<ng-container *ngIf="showFiltro">
+<table class="table-responsive" >
+    <tr>
+        <th>
+            <div class="container-fluid mb-4">
+
+            Centro de costos:
+            <select class="form-select" name="filtro1"  [(ngModel)]="filtro1Seleccion">
+                <option [value]="tipo" *ngFor="let tipo of filtro1">{{tipo}}</option>
+            </select>
+            </div>
+        </th>
+        <th>
+            <div class="container-fluid mb-4">
+
+            Cliente:
+            <select class="form-select" name="filtro2" [(ngModel)]="filtro2Seleccion">
+                <option [value]="tipo" *ngFor="let tipo of filtro2">{{tipo}}</option>
+            </select>
+            </div>
+        </th>
+    </tr>
+
+    <tr>
+
+        <th>
+            <div class="container-fluid mb-4">
+
+            Cliente subcontrato:
+            <select name="filtro3" class="form-select" [(ngModel)]="filtro3Seleccion">
+                <option [value]="tipo" *ngFor="let tipo of filtro3">{{tipo}}</option>
+            </select>
+            </div>
+        </th>
+
+    </tr>
+    <tr>
+        <td>
+            <div class="container-fluid mb-4">
+                Fecha STP inicio: <B>{{fchInicio}}</B>
+
+                <input class="form-control" type="date"  [(ngModel)]="fchInicio"
+                placeholder="{{fchInicio}}"  required />
+
+            </div>
+        </td>
+
+        <td>
+            <div class="container-fluid mb-4">
+                Fecha STP fin: <B>{{fchFin}}</B>
+                <input class="form-control" type="date"  [(ngModel)]="fchFin"
+                placeholder="{{fchFin}}"  required />
+
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td><button class="btn  btn-primary" (click)="onSearch()">Buscar</button></td>
+        <td><button class="btn btn-primary" (click)="onClean()">Limpiar</button></td>
+    </tr>
+</table>
+
+   
+</ng-container>
+
+<ng-container  *ngIf="!showTable">
+    <div class="container p-5 my-3 bg-dark text-white"><p class="text-center font-weight-bold">{{errorMessage}}</p></div>
+</ng-container>
+
+</div>

@@ -1,0 +1,74 @@
+<ng-container *ngIf="showForm">
+    <div class="container-fluid mb-4">
+        <h1 class="text-center font-weight-bold">Editar segmento</h1>
+    </div>
+
+    <form>
+        <ng-container *ngIf="requestedId!==-1">
+            <br>
+            ID :
+            <label class="form-label"> {{segmentoConsultado.segmentoId}} </label>
+
+            <br>
+            <label class="form-label">Descripción</label>
+
+            <textarea class="form-control" [(ngModel)]="segmentoConsultado.descripcion"
+                [ngModelOptions]="{standalone: true}"> </textarea>
+
+            <br>
+
+            <br>
+
+            <label class="form-label">Nombre corto</label>
+
+            <textarea class="form-control" [(ngModel)]="segmentoConsultado.nombreCorto"
+                [ngModelOptions]="{standalone: true}"></textarea>
+
+            <br>
+
+            <label class="form-label">Activo</label>
+
+
+            <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="segmentoConsultado.esActivo"
+                [ngModelOptions]="{standalone: true}">
+        </ng-container>
+
+
+
+
+
+        <ng-container *ngIf="requestedId==-1">
+
+            <br>
+            <label class="form-label">Descripción</label>
+
+            <textarea class="form-control" [(ngModel)]="descripcion"  [ngModelOptions]="{standalone: true}"> </textarea>
+
+            <br>
+
+            <br>
+
+            <label class="form-label">Nombre corto</label>
+
+            <textarea class="form-control" [(ngModel)]="nombreCorto" [ngModelOptions]="{standalone: true}"></textarea>
+
+            <br>
+
+            <label class="form-label">Activo</label>
+
+
+            <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="esActivo"  [ngModelOptions]="{standalone: true}">
+        </ng-container>
+
+
+
+
+        <td><button class="btn btn-primary" (click)="editar()">Guardar</button></td>
+        <div class="container p-5 my-3 bg-dark text-white">{{ this.errorMessage }}</div>
+
+
+        <br>
+
+        <ng-container *ngIf="!showForm">
+            <div class="container p-5 my-3 bg-dark text-white">{{ this.errorMessage }}</div>
+        </ng-container>

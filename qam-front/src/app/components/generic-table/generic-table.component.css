@@ -1,0 +1,24 @@
+td.celda,th.celda{
+
+background: #252525; 
+overflow:auto;
+scrollbar-arrow-color : #999999;
+scrollbar-face-color : #666666;
+scrollbar-track-color :#3333 ; 
+position: absolute;
+text-align: left;
+
+
+}
+
+
+
+td,th{
+
+    height:100px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+
+
+    }

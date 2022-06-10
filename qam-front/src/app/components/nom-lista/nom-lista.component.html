@@ -1,0 +1,58 @@
+<ng-container *ngIf="showTable">
+    <div class="table-responsive">
+
+        <div class="container-fluid mb-4">
+            <h1 class="text-center font-weight-bold">NOM 035</h1>
+        </div>
+        <br>
+        <div class="row">
+            <div class="">  <label class="form-label">Reporte Cliente : </label>
+                <select class="form-select" name="cliente" [(ngModel)]="clienteId">
+                        <option value="-1">Porfavor seleccione un cliente...</option>
+                        <option *ngFor="let client of clientCatalogue" [value]="client.idClient">
+                                {{client.razon}}</option>
+                </select>
+            </div>
+            <div class="">
+                <button class="btn btn-primary" (click)="getClientReporte()">Generar reporte</button>
+            </div>
+        </div>
+        <br>
+
+        <table class="table table-bordered table-hover table-dark table-striped">
+            <thead>
+                <tr>
+                    
+                        <th>Clave Colaborador</th>
+                        <th>Nombre Colaborador</th>
+                        <th>{{cuestionario[0].nombre}}</th>
+                        <th>{{cuestionario[1].nombre}}</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let nom035 of nomlist ">
+                    <tr>
+                        
+                        <td class="align-middle" >{{nom035.id}}</td>
+                        <td class="align-middle" >{{nom035.nombre}}</td>
+                        <td class="align-middle"><a [routerLink]="[url]"
+                                [queryParams]="{cuestionarioId:0,colaborador:nom035.id}">{{nom035.c0+'/'+cuestionario[0].cTotal}}</a></td>
+                        <td class="align-middle"><a [routerLink]="[url]"
+                                [queryParams]="{cuestionarioId:1,colaborador:nom035.id}">{{nom035.c1+'/'+cuestionario[1].cTotal}}</a></td>
+                           
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+       
+    </div>
+   
+
+</ng-container>
+
+<ng-container *ngIf="!showTable">
+    <div class="container p-5 my-3 bg-dark text-white">
+        <p class="text-center font-weight-bold">{{errorMessage}}</p>
+    </div>
+</ng-container>

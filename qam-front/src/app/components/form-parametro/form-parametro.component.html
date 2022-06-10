@@ -1,0 +1,17 @@
+
+    <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Editar Parámetro </h1></div>
+
+    <div>
+        <p>
+            Parámetro  :  
+        </p>
+
+        <label class="form-label">{{parametro}}</label>
+        <br>
+        <textarea [(ngModel)]="valor" ></textarea>
+
+        <br>
+
+        <td><button class="btn btn-primary" (click)="editar()">Editar</button></td>
+
+     </div>

@@ -1,0 +1,78 @@
+<ng-container *ngIf="showForm">
+        <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Cliente</h1></div>
+
+        <form>
+            <label class="form-label">ID : {{clientData.idClient}}</label>
+            
+            <br>
+            <label class="form-label">CURP : {{clientData.curp}}</label>
+            <br>
+            <label class="form-label">RFC : {{clientData.rfc}}</label>
+            <br>
+            <label class="form-label">Razon social : {{clientData.razon}}</label>
+            <br>
+            <label class="form-label">Email : {{clientData.email}}</label>
+            <br>
+            <ng-container *ngIf="errorFacturadores===''" >
+                    <label class="form-label">Facturador : </label>
+                    <select class="form-select" name="facturador"  [(ngModel)]="clientData.facturadorId"> 
+                            <option *ngFor="let facturador of facturadores" [value]="facturador.id">{{facturador.nombre}}</option> 
+                    </select> 
+            </ng-container>
+            <ng-container *ngIf="errorFacturadores!==''"> <label class="form-label">Facturador : {{clientData.facturadorName}}</label> </ng-container>
+
+            <br>
+            <ng-container *ngIf="errorDispersores===''" >
+                    <label class="form-label">Dispersor : </label>
+                    <select class="form-select" name="dispersor"  [(ngModel)]="clientData.dispersorId"> 
+                            <option *ngFor="let dispersor of dispersores" [value]="dispersor.id">{{dispersor.nombre}}</option> 
+                    </select> 
+            </ng-container>
+            <ng-container *ngIf="errorDispersores!==''"> <label class="form-label">Dispersor : {{clientData.dispersorName}}</label> </ng-container>
+
+            <br>
+            <ng-container *ngIf="errorServicios===''" >
+                    <label class="form-label">Servicio : </label>
+                    <select class="form-select" name="servicio"  [(ngModel)]="clientData.servicioId"> 
+                            <option *ngFor="let servicio of servicios" [value]="-1"></option> 
+                            <option *ngFor="let servicio of servicios" [value]="servicio.idServicio">{{servicio.nombre}}</option> 
+                    </select> 
+            </ng-container>
+            <ng-container *ngIf="errorServicios!==''"> <label class="form-label">Servicio : {{clientData.servicioName}}</label> </ng-container>
+
+            <br>
+            <ng-container *ngIf="errorInterfaces===''" >
+                    <label class="form-label">Interfaz : </label>
+                    <select class="form-select" name="interfaz" [(ngModel)]="clientData.interfazId"> 
+                            <option *ngFor="let interfaz of interfaces" [value]="-1"></option> 
+                            <option *ngFor="let interfaz of interfaces" [value]="interfaz.idInterfaz">{{interfaz.nombre}}</option> 
+                    </select> 
+            </ng-container>
+            <ng-container *ngIf="errorInterfaces!==''"> <label class="form-label">Interfaz : {{clientData.interfazName}}</label> </ng-container>
+            
+
+            <br> 
+            <label class="form-label">Periodo para facturar : </label>
+            <input type="number" min="0" max="31" class="form-control" name="periodoFactura" [(ngModel)]="clientData.periodoFactura">
+            <br>
+            <label class="form-label">Mensaje para recuperar Contraseña : </label>
+            <br>
+            <textarea class="form-control" name="mensajerecuperar" [(ngModel)]="clientData.mensajeEmailRecuperarContra"></textarea>
+            <br>
+            <label class="form-label">Mensaje para email de factura : </label>
+            <br>
+            <textarea class="form-control" name="mensajefactura" [(ngModel)]="clientData.mensajeEmailFactura"></textarea>
+            <br>
+            <label class="form-label">Email sender de onesignal para enviar correos : </label>
+            <br>
+            <input type="text" class="form-control" name="emailsender" [(ngModel)]="clientData.emailSender">
+            <br>
+            <button class="btn btn-primary" (click)="save()">Guardar</button>
+        </form>
+        
+
+    </ng-container>
+    
+    <ng-container  *ngIf="!showForm">
+        <div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+    </ng-container>

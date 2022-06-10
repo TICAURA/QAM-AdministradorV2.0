@@ -1,0 +1,42 @@
+<ng-container *ngIf="showForm">
+        <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Rol</h1></div>
+    <form>
+        <ng-container *ngIf="requestedId !== -1">
+            <br>
+            <label class="form-label">ID : {{catalogueData.id}}</label>
+        </ng-container>
+        <br>
+        <div class="form-group">
+                <label class="form-label">Nombre : </label>
+                <input type="text" class="form-control {{validName}}" name="nombre" [(ngModel)]="catalogueData.nombre" (blur)="validarNombre(false)">
+                <div class="invalid-feedback">{{nameError}}</div>
+        </div>
+        <br>
+        <label class="form-label">Descripción : </label>
+        <input type="text" class="form-control" name="descripcion" [(ngModel)]="catalogueData.descripcion">
+
+        <ng-container *ngIf="requestedId !== -1">
+            <br>
+            <label class="form-label">Fecha de última modificación : {{catalogueData.fechaModificacion}}</label>
+            <br>
+            <label class="form-label">Fecha de registro : {{catalogueData.fechaRegistro}}</label>
+        </ng-container>
+
+        <br>
+        <label class="form-label">Activo : </label>
+        <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="catalogueData.activo">
+        <br>
+        <button class="btn btn-primary" (click)="validarNombre(true)">Guardar</button>
+    </form>
+
+    <ng-container *ngIf="requestedId!==-1">
+        <br>
+        <app-assing-table [type]="assignPermission" [fatherId]="requestedId"></app-assing-table>
+        <br>
+
+    </ng-container>
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+    <div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

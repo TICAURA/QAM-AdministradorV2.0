@@ -1,0 +1,63 @@
+<ng-container *ngIf="showForm">
+        <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Servicio</h1></div>
+        <form>
+                <ng-container *ngIf="requestedId !== -1">
+                        <br>
+                        <label class="form-label">ID : {{serviceData.idServicio}}</label>
+                </ng-container>
+
+
+                <br>
+                <div class="form-group">
+                <label class="form-label">Nombre : </label>
+                <input type="text" class="form-control {{validName}}" name="nombre" [(ngModel)]="serviceData.nombre" (blur)="validarNombre(false)">
+                <div class="invalid-feedback">{{nameError}}</div>
+                </div>
+                <br>
+                <label class="form-label">Endpoint : </label>
+                <input type="text" class="form-control" name="endpoint" [(ngModel)]="serviceData.endpoint">
+
+                <br>
+                <ng-container *ngIf="!errorTipoAmbiente">
+                        <label class="form-label">Tipo de ambiente : </label>
+                        <select class="form-select" name="tipoambiente" [(ngModel)]="serviceData.tipoAmbienteId">
+                                <option *ngFor="let tipoAmbiente of tipoAmbientes" [value]="tipoAmbiente.id">
+                                        {{tipoAmbiente.nombre}}</option>
+                        </select>
+                </ng-container>
+                <ng-container *ngIf="errorTipoAmbiente">
+                        <label class="form-label">Facturador : {{serviceData.tipoAmbienteNombre}}</label>
+                </ng-container>
+
+                <br>
+                <ng-container *ngIf="!errorTipoServicio">
+                        <label class="form-label">Tipo de servicio : </label>
+                        <select class="form-select" name="tiposervicio" [(ngModel)]="serviceData.tipoServicioId">
+                                <option *ngFor="let tipoServicio of tipoServicios" [value]="tipoServicio.id">
+                                        {{tipoServicio.nombre}}</option>
+                        </select>
+                </ng-container>
+                <ng-container *ngIf="errorTipoServicio">
+                        <label class="form-label">Dispersor : {{serviceData.tipoServicioNombre}}</label>
+                </ng-container>
+
+                <ng-container *ngIf="requestedId !== -1">
+                        <br>
+                        <label class="form-label">Fecha de última modificación : {{serviceData.fechaModificacion}}</label>
+                        <br>
+                        <label class="form-label">Fecha de registro : {{serviceData.fechaRegistro}}</label>
+                </ng-container>
+
+                <br>
+                <label class="form-label">Activo : </label>
+                <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="serviceData.activo">
+                <br>
+                <button class="btn btn-primary" (click)="validarNombre(true)">Guardar</button>
+        </form>
+
+
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+        <div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

@@ -1,0 +1,16 @@
+<form class="needs-validation" (ngSubmit)="login()">
+    <div class="form-group">
+        <label class="form-label" for="usuario">Usuario:</label>
+        <input type="text" name="usuario" class="form-control {{userValid}}" id="usuario" [(ngModel)]="user" required>
+        <div class="invalid-feedback">Porfavor ingrese un usuario.</div>
+    </div>
+    <div class="form-group">
+        <label class="form-label" for="password">Contraseña:</label>
+        <input type="password" name="password" id="password" class="form-control {{passValid}}" [(ngModel)]="password" required>
+        <div class="invalid-feedback">Porfavor ingrese una contraseña.</div>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Login</button>
+
+
+</form>

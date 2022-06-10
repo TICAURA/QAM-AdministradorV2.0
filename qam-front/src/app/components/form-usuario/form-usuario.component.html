@@ -1,0 +1,61 @@
+<ng-container *ngIf="showForm">
+        <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Usuario</h1></div>
+
+    <form>
+        <ng-container *ngIf="requestedId!==-1">
+            <br>
+            <label class="form-label">ID : {{userData.userId}}</label>
+        </ng-container>
+        <br>
+        <label class="form-label">Nombre : </label>
+        <input type="text" class="form-control" [(ngModel)]="userData.name" name="name">
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Usuario : </label>
+            <input type="text" [disabled]="disableFields" class="form-control {{validName}}" name="usuario" [(ngModel)]="userData.user" (blur)="validarNombre()">
+            <div class="invalid-feedback">{{nameError}}</div>
+        </div>
+
+        <br>
+        <label class="form-label">Contraseña : </label>
+        <input type="password" [disabled]="disableFields" autocomplete="off" class="form-control {{validPassword}}" name="pass1" [(ngModel)]="password1" (blur)="checkPass()">
+        <br>
+        <div class="form-group">
+            <label class="form-label">Confirmar contraseña : </label>
+            <input type="password" [disabled]="disableFields" autocomplete="off" class="form-control {{validPassword}}" name="pass2" [(ngModel)]="password2" (blur)="checkPass()">
+            <div class="invalid-feedback">{{errorPassword}}</div>
+        </div>
+        <br>
+        <label class="form-label">Activo : </label>
+        <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="userData.activo">
+        
+        <ng-container *ngIf="requestedId!==-1">
+            <br>
+            <label class="form-label">Fecha de última modificación : {{userData.fechaModificacion}}</label>
+            <br>
+            <label class="form-label">Fecha de registro : {{userData.fechaRegistro}}</label>
+            <br>
+            <label class="form-label">Fecha de último login : {{userData.ultimoLogin}}</label>
+            <br>
+            <label class="form-label">Fecha de última actividad : {{userData.ultimaActividad}}</label>
+        </ng-container>
+        <br>
+        <button class="btn btn-primary" (click)="validateForm(true)">Guardar</button>
+    </form>
+
+    <ng-container *ngIf="requestedId!==-1">
+        <br>
+        <app-assing-table [type]=" assignClient " [fatherId]=" requestedId"></app-assing-table>
+        <br>
+        <app-assing-table [type]=" assignRol " [fatherId]="requestedId"></app-assing-table>
+        <br>
+        <app-assing-table [type]=" assignPermission " [fatherId]="requestedId"></app-assing-table>
+        <br>
+    </ng-container>
+
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+    <div class="container p-5 my-3 bg-dark text-white">{{ this.errorMessage }}</div>
+</ng-container>

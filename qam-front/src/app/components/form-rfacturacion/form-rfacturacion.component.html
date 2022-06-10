@@ -1,0 +1,28 @@
+<div class="container-fluid mb-4">
+
+    <ng-container>
+        <table class="table-responsive">
+
+            <tr>
+                <td>
+                    <div class="container-fluid mb-4">
+                        Fecha del mes para generar el reporte: <B>{{fchreporte}}</B>
+
+                        <input class="form-control" type="date" [(ngModel)]="fchreporte" placeholder="{{fchreporte}}"
+                            required />
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td><button class="btn  btn-primary" (click)="onSearch()">Buscar</button></td>
+
+            </tr>
+        </table>
+    </ng-container>
+
+    <ng-container  *ngIf="!showcontent">
+        <div class="container p-5 my-3 bg-dark text-white"><p class="text-center font-weight-bold">{{errorMessage}}</p></div>
+    </ng-container>
+</div>

@@ -1,0 +1,82 @@
+<ng-container *ngIf="showForm">
+    <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Reporte NOM 035</h1></div>
+<form>
+    <br>
+    <label class="form-label">Clave colaborador : {{nom035.id}}</label>
+    <br>
+    <label class="form-label">Nombre : {{nom035.nombre}}</label>
+    <br>
+    <label class="form-label">Cuestionario: {{nom035.cuestionario.nombre}}</label>
+    <br>
+    <label class="form-label">Riesgo : {{nom035.cuestionario.total}}</label>
+    <br>
+    <label class="form-label">Riesgo evaluación : {{nom035.cuestionario.riesgo}}</label>
+</form>
+
+<br>
+
+<div class="table-responsive">
+
+    <div class="container-fluid mb-4">
+        <h1 class="text-center font-weight-bold">Categorias</h1>
+    </div>
+
+    <table class="table table-bordered table-hover table-dark table-striped">
+        <thead>
+            <tr>
+                    <th>Categoria</th>
+                    <th>Riesgo</th>
+                    <th>Evaluación</th>         
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let categoria of nom035.categorias">
+                <tr>
+                    <td class="align-middle" >{{categoria.nombre}}</td>
+                    <td class="align-middle" >{{categoria.total}}</td>
+                    <td class="align-middle" >{{categoria.riesgo}}</td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+   
+</div>
+
+<br>
+
+<div class="table-responsive">
+
+    <div class="container-fluid mb-4">
+        <h1 class="text-center font-weight-bold">Dominios</h1>
+    </div>
+
+    <table class="table table-bordered table-hover table-dark table-striped">
+        <thead>
+            <tr>
+                    <th>Dominio</th>
+                    <th>Riesgo</th>
+                    <th>Evaluación</th>         
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let dominio of nom035.dominios">
+                <tr>
+                    <td class="align-middle" >{{dominio.nombre}}</td>
+                    <td class="align-middle" >{{dominio.total}}</td>
+                    <td class="align-middle" >{{dominio.riesgo}}</td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-md-6"><button class="btn btn-primary" (click)="reporte('individual')">Generar reporte individual</button></div>
+        <div class="col-md-6"><button class="btn btn-primary" (click)="reporte('respuestas')">Exportar respuestas</button></div>
+    </div>
+   
+</div>
+
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+<div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

@@ -1,0 +1,7 @@
+.mat-form-field{
+    background-color: white;
+    color: black;
+  }
+  ::ng-deep .mat-form-field-wrapper{
+    margin-bottom: -1.25em;
+ }

@@ -1,0 +1,100 @@
+<ng-container *ngIf="showForm">
+    <div class="container-fluid mb-4">
+        <h1 class="text-center font-weight-bold">Interfaz</h1>
+    </div>
+
+    <form>
+        <ng-container *ngIf="requestedId!==-1">
+            <br>
+            <label class="form-label">ID : {{interfazData.idInterfaz}}</label>
+        </ng-container>
+        <br>
+        <div class="form-group">
+            <label class="form-label">Nombre : </label>
+            <input type="text" class="form-control {{validName}}" name="nombre" [(ngModel)]="interfazData.nombre"
+                (blur)="validarNombre(false)">
+            <div class="invalid-feedback">{{nameError}}</div>
+        </div>
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Titulo : </label>
+            <input type="text" class="form-control" name="titulo" [(ngModel)]="interfazData.titulo">
+        </div>
+       
+        <br>
+        <label class="form-label">Logo icono : </label>
+        <input type="file" class="form-control" (change)="onFileChange($event)" name="logoicono">
+        <img *ngIf="requestedId!==-1" [src]="imageRoute+interfazData.urlLogoIconoId" width="250" height="250"/>
+
+
+        <br>
+        <br>
+        <div class="form-group">
+            <label class="form-label">Color de Botones para funciones principales : </label>
+            <input class="form-control" [value]="interfazData.colorGlobalSecundario" [style.background]="interfazData.colorGlobalSecundario" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorGlobalSecundario" />
+        </div>
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Color de Texto de Botones para funciones principales : </label>
+            <input class="form-control" [value]="interfazData.colorTexto" [style.background]="interfazData.colorTexto" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorTexto" />
+        </div>
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Color de Títulos principales, Botones para funciones secundarias, y fondo en Login : </label>
+            <input class="form-control" [value]="interfazData.colorGlobalPrimario" [style.background]="interfazData.colorGlobalPrimario" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorGlobalPrimario" />
+        </div>
+   
+        <br>
+        <div class="form-group">
+            <label class="form-label">Hipervínculos y subTítulos : </label>
+            <input class="form-control" [value]="interfazData.colorHomePrimario" [style.background]="interfazData.colorHomePrimario" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorHomePrimario" />
+        </div>
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Textos de validaciones y mensajes asociados a cajas de Texto (en Login) : </label>
+            <input class="form-control" [value]="interfazData.colorError" [style.background]="interfazData.colorError" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorError" />
+        </div>
+
+        <br>
+        <div class="form-group">
+            <label class="form-label">Información auxiliar: Versión, Copyright : </label>
+            <input class="form-control" [value]="interfazData.colorHomeSecundario" [style.background]="interfazData.colorHomeSecundario" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorHomeSecundario" />
+        </div>
+       
+        <br>
+        <div class="form-group">
+            <label class="form-label">Fondo pantallas operación : </label>
+            <input class="form-control" [value]="interfazData.colorBackground" [style.background]="interfazData.colorBackground" [cpOutputFormat]="'hex'"
+                    [(colorPicker)]="interfazData.colorBackground" />
+        </div>
+       
+
+        <ng-container *ngIf="requestedId!==-1">
+            <br>
+            <label class="form-label">Fecha de última modificación : {{interfazData.fechaModificacion}}</label>
+            <br>
+            <label class="form-label">Fecha de registro : {{interfazData.fechaRegistro}}</label>
+        </ng-container>
+
+        <br>
+        <label class="form-label">Activo : </label>
+        <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="interfazData.activo">
+        <br>
+        <button class="btn btn-primary" (click)="validarNombre(true)">Guardar</button>
+    </form>
+
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+    <div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

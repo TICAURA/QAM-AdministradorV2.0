@@ -1,0 +1,38 @@
+<ng-container *ngIf="showTable">
+        <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">{{tableName}}</h1></div>
+       
+        <table class="table table-bordered table-hover table-dark table-striped">
+                <thead>
+                    <tr>
+                        <ng-container *ngFor="let header of tableHeaders">
+                            <td>{{header}}</td>
+                        </ng-container>
+                     
+            
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let rowData of tableFields; let rowIndex = index">
+                        <tr>
+                            <ng-container *ngFor="let field of rowData; let fieldIndex = index">
+                                    <ng-container *ngIf="fieldIndex!==(rowData.length-1)">
+                                            <td class="align-middle"> {{field}}</td>
+                                    </ng-container>
+                                    <ng-container *ngIf="fieldIndex===(rowData.length-1)">
+                                            <td *ngIf="field === '0'"><button class="btn btn-success"  (click)="this.link(rowIndex)" >LINK</button></td>
+                                            <td *ngIf="field === '1'"><button class="btn btn-danger"   (click)="this.break(rowIndex)">REMOVE</button></td>
+                                            <td *ngIf="field === '2'"><button class="btn btn-light"                                   >LINKING</button></td>
+                                            <td *ngIf="field === '3'"><button class="btn btn-light"                                   >REMOVING</button></td>
+                                    </ng-container>
+                            </ng-container>
+                           
+            
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+</ng-container>
+
+<ng-container  *ngIf="!showTable">
+    <div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

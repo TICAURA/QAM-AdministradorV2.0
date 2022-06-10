@@ -1,0 +1,82 @@
+<ng-container *ngIf="showForm">
+    <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Promoción</h1></div>
+<form>
+    <ng-container *ngIf="requestedId !== -1">
+        <br>
+        <label class="form-label">ID : {{promocion.idPromocion}}</label>
+    </ng-container>
+    
+    <br>
+    <label class="form-label">Nombre : </label>
+    <input type="text" class="form-control" name="nombre" [(ngModel)]="promocion.nombre">
+    
+    <br>
+    <label class="form-label">Descripción : </label>
+    <input type="text" class="form-control" name="descripcion" [(ngModel)]="promocion.descripcion">
+
+    
+    <br>
+    <label class="form-label">Tipo de ambiente : </label>
+    <select  class="form-select" name="tipoambiente" [(ngModel)]="promocion.tipoPromocion">
+            <option   [ngValue]="0">Monto</option>
+            <option    [ngValue]="1">Porcentaje</option>
+    </select>
+
+
+    <br>
+    <label class="form-label">Código : </label>
+    <input type="text" readonly class="form-control" name="codigoPromo" [(ngModel)]="promocion.codigoPromo">
+
+
+    <br>
+      <mat-form-field class="calendario" appearance="fill">
+
+        <mat-label>Campaña promoción</mat-label>
+
+        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+          <input matStartDate formControlName="start" placeholder="Inicio">
+          <input matEndDate formControlName="end" placeholder="Fin">
+        </mat-date-range-input>
+
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      
+        <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Fecha de inicio inválida.</mat-error>
+        <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Fecha de fin inválida.</mat-error>
+      </mat-form-field>
+      <br>
+
+      <ng-container *ngIf="promocion.tipoPromocion === 0">
+            <br>
+            <label class="form-label">Monto : </label>
+            <input type="number" min="1" step="1" max="1000"  class="form-control" name="montoBeneficio" [(ngModel)]="promocion.montoBeneficio">
+      </ng-container>
+
+      <ng-container *ngIf="promocion.tipoPromocion === 1">
+            <br>
+            <label class="form-label">Porcentaje : </label>
+            <input type="number"  min="1" max="99"  class="form-control" (blur)="changePorcentaje()" placeholder="%" name="porcentajeBeneficio" [(ngModel)]="porcentajeBeneficio">
+            <br>
+            <label class="form-label">Monto máximo : </label>
+            <input type="number" min="1" step="1"  class="form-control" name="montoPorcentajeMaximo" [(ngModel)]="promocion.montoPorcentajeMaximo">
+       </ng-container>
+
+    <ng-container *ngIf="requestedId !== -1">
+        <br>
+        <label class="form-label">Fecha de creación : {{promocion.fechaCreacion}}</label>
+    </ng-container>
+
+ 
+    <br>
+    <label class="form-label">Activo : </label>
+    <input type="checkbox" class="form-check-input mx-2" name="activo" [(ngModel)]="promocion.activo">
+
+    <br>
+    <button class="btn btn-primary" (click)="save()">Guardar</button>
+</form>
+
+</ng-container>
+
+<ng-container *ngIf="!showForm">
+<div class="container p-5 my-3 bg-dark text-white">{{errorMessage}}</div>
+</ng-container>

@@ -1,0 +1,74 @@
+<ng-container *ngIf="showFiltro">
+
+
+
+    <div>
+        <p>
+            <select name="filtro1" class="form-control" [(ngModel)]="filtro1Seleccion">
+                <option [value]="tipo" *ngFor="let tipo of filtro1">{{tipo}}</option>
+            </select>
+        </p>
+
+        <p>
+            <select name="filtro2" class="form-control" [(ngModel)]="filtro2Seleccion">
+                <option [value]="tipo" *ngFor="let tipo of filtro2">{{tipo}}</option>
+            </select>
+        </p>
+
+        <p>
+            <input [(ngModel)]="filtroInput1" class="form-control" name="filtroInput">
+        </p>
+        <table>
+            <tr>
+                <td><button class="btn btn-primary" (click)="onSearch()">Buscar</button></td>
+                <td><button class="btn btn-primary" (click)="onClean()">Limpiar</button></td>
+            </tr>
+        </table>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="showTable">
+    <div class="table-responsive">
+
+        <div class="container-fluid mb-4">
+            <h1 class="text-center font-weight-bold">{{tableName}}</h1>
+        </div>
+
+        <table class="table table-bordered table-hover table-dark table-striped">
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let header of tableHeaders">
+                        <th>{{header}}</th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let rowData of tableFields ">
+                    <tr>
+                        
+                        <ng-container *ngFor="let field of rowData; let i = index ">
+                            <td class="align-middle" *ngIf="i===0 && !canEdited "><a [routerLink]="[url]"
+                                    [queryParams]="{requestedId:field}">{{field}}</a></td>
+                            <td class="align-middle"  *ngIf="i!==0 && field.length<65">{{field}}</td>
+                            <td class="celda"  *ngIf="field.length>=65">{{field}}</td>
+
+                        </ng-container>
+                        <td  class="align-middle" *ngIf="canDelete"><button class="btn btn-primary"
+                                (click)="eliminar(rowData[0])">borrar</button></td>
+                        <td class="align-middle" *ngIf="canEdited"><button class="btn btn-primary" (click)="editar(rowData)">Editar</button>
+                        </td>
+
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+        <button *ngIf="canCreate" class="btn btn-light mt-3" (click)="createData()">Crear nuevo</button>
+    </div>
+
+</ng-container>
+
+<ng-container *ngIf="!showTable">
+    <div class="container p-5 my-3 bg-dark text-white">
+        <p class="text-center font-weight-bold">{{errorMessage}}</p>
+    </div>
+</ng-container>

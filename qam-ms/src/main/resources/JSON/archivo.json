@@ -1,0 +1,17 @@
+{
+  "entrada": {
+    "archivo": {
+      "nombre": "Imagen-HC.jpg",
+      "contenido": "iVAC ………. ABBm+5ErkJggg==",
+      "tipoDocto": {
+        "acronimo": "PDFSATTIMBRE"
+      },
+      "tipoMM": {
+        "id": 1
+      }
+    },
+    "expediente": {
+      "clave": "pdfTimbre1"
+    }
+  }
+}
