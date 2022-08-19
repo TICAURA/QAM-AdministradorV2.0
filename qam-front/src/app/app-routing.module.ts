@@ -20,6 +20,9 @@ import { FormPromocionComponent } from './components/form-promocion/form-promoci
 import { FormSegmentoComponent } from './components/form-segmento/form-segmento.component';
 import { NomReporteComponent } from './components/nom-reporte/nom-reporte.component';
 import { NomListaComponent } from './components/nom-lista/nom-lista.component';
+import { FormCargaComponent } from './components/form-carga/form-carga.component';
+import { FormCargaMexComponent} from './components/form-carga-mex/form-carga-mex.component';
+import { FormCargaColComponent} from './components/form-carga-col/form-carga-col.component';
 
 
 const routes: Routes = [
@@ -39,6 +42,9 @@ const routes: Routes = [
   { path: 'admin/nom-reporte', component:NomReporteComponent},
   { path: 'admin/nom-lista', component:NomListaComponent},
   { path: 'recupera_contrasena', component:FormResetcontraComponent},
+  { path: 'admin/form-carga', component:FormCargaComponent},
+  { path: 'form-carga-mex',component:FormCargaMexComponent},
+  { path: 'form-carga-col',component:FormCargaColComponent},
   
  
 

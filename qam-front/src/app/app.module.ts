@@ -38,6 +38,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { FormSegmentoComponent } from './components/form-segmento/form-segmento.component';
 import { NomReporteComponent } from './components/nom-reporte/nom-reporte.component';
 import { NomListaComponent } from './components/nom-lista/nom-lista.component';
+import { FormCargaComponent } from './components/form-carga/form-carga.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { NomListaComponent } from './components/nom-lista/nom-lista.component';
     FormPromocionComponent,
     FormSegmentoComponent,
     NomReporteComponent,
-    NomListaComponent
+    NomListaComponent,
+    FormCargaComponent
   ],
   imports: [
     BrowserModule,
