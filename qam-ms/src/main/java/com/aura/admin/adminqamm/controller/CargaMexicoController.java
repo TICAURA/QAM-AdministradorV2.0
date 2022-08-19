@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.service.CargaMexicoService;
@@ -26,9 +28,9 @@ public class CargaMexicoController {
 	Logger logger = LoggerFactory.getLogger(CargaMexicoController.class);
 	
 	@PostMapping("")
-    public ResponseEntity<Object> insertCargaMexico(@RequestAttribute("username") int loggedIdUser){
+    public ResponseEntity<Object> insertCargaMexico(@RequestAttribute("username") int loggedIdUser, @ModelAttribute MultipartFile cargaMexico){
         try {
-        	cargaMexicoService.insertCargaMexico(loggedIdUser);
+        	cargaMexicoService.insertCargaMexico(loggedIdUser, cargaMexico);
             return new ResponseEntity<Object>("", HttpStatus.OK);
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
