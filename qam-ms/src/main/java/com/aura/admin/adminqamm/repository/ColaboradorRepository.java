@@ -15,5 +15,7 @@ import com.aura.admin.adminqamm.model.ColaboradorId;
 public interface ColaboradorRepository extends JpaRepository<Colaborador, ColaboradorId>{
 
 	Colaborador findAllByMailRegistro(String email);
+	
+	Colaborador findByClaveColaborador(Long claveColaborador);
 
 }
