@@ -207,5 +207,26 @@ public class ClientService {
 	
 		return listClienteDto;
 	}
+	
+	public ClienteDto buscarClienteCarga(String rfc, String registroPatronal, String subcRfc) throws BusinessException {
+		Cliente clienteBD = null;
+
+		if (StringUtils.isNotBlank(subcRfc)) {
+			clienteBD = clientRepository.findByRfcAndRegistroPatronalAndSubRFC(rfc, registroPatronal, subcRfc);
+		} else {
+			clienteBD = clientRepository.getByRfcAndRegistroPatronal(subcRfc, registroPatronal);	
+		}
+		
+		if (clienteBD==null) {
+			throw new BusinessException("No hay cliente para asociar al colaborador", 401);
+		}
+
+		ClienteDto clienteDTO = new ClienteDto();
+
+		clienteDTO.setIdClient(clienteBD.getClientId());
+		clienteDTO.setRazon(clienteBD.getRazon());
+		
+		return clienteDTO;
+	}
 
 }

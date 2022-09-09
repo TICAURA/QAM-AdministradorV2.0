@@ -15,7 +15,7 @@ public class Persona {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "pers_id")
-    private int personaId;
+    private Integer personaId;
 
     @Column(name="curp")
     private String curp;
@@ -45,7 +45,7 @@ public class Persona {
     private String nss;
 
     @Column(name="fch_alta_quincenam")
-    private Date fechaDeAlta;
+    private Date fechaAltaQuincena;
 
     @Column(name="es_activo")
     private boolean activo;
