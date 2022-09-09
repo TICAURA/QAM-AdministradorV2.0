@@ -14,66 +14,78 @@ import * as FileSaver from 'file-saver';
 import { CargaService } from 'src/app/service/carga.service';
 import { Carga } from 'src/app/model/carga';
 
-@Component({
-  selector: 'app-form-carga-mex',
-  templateUrl: './form-carga-mex.component.html',
-  styleUrls: ['./form-carga-mex.component.css']
-})
+ @Component({
+   selector: 'app-form-carga-mex',
+   templateUrl: './form-carga-mex.component.html',
+   styleUrls: ['./form-carga-mex.component.css']
+ })
+ export class FormCargaMexComponent implements OnInit {
+correcto = 0;
+error = 0;
+archivos = 1;
+files: Carga;
+typeEndpoint:Endpoint = Endpoint.CARGAMEX;
+getAllSuccess: any;
+callFailure: any;
+aux :File;
 
-export class FormCargaMexComponent implements OnInit {
-  correcto = 0;
-  error = 0;
-  archivos = 1;
-  files: File;
-  typeEndpoint:Endpoint = Endpoint.CARGAMEX;
-  
-  constructor(private activatedRoute: ActivatedRoute, private genericService:GenericService,private router:Router, private cargaService : CargaService){
+constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
 
-  }
-
-  private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
-
+}
+private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
   ngOnInit(): void {
+    this.files = new Carga();
+    this.files.idCarga = "idCarga";
   }
-
 
   onSearch(){
+    this.downloadFile("layoutcarga");
+    
 
   }
+
+  downloadFile(filename: String): void {
+
+    this.rest
+      .download(Endpoint.CARGAMEX+filename)
+      .subscribe(blob => FileSaver.saveAs(blob, "Layoutcarga.xls")  );
+  }
+
 
   onUpload(){
-
     let form:FormData = new FormData();
 
+    form.append('idCarga',this.files.idCarga);
+
     if(this.files !== undefined && this.files !== null){
-    form.append('archivoCarga', this.files, this.files.name);}
+    form.append('archivo', this.files.archivo, this.files.archivo.name);}
+
     
+
+
     try{
+      
+      
       this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
-      this.correcto = 1;
-    }
-    catch{
-      this.error = 1;
+      console.log("cargado")
       
     }
-    
-    console.log("cargado")
+    catch{
+      console.log ("error al inertar archivo");
+    }
+
   }
-
-
   onFileChange(event: any){
 
-    
-    this.files = event.target.files[0];
-    console.log(this.files);
+    this.files.archivo = event.target.files[0]
+    console.log(this.files.archivo);
+  }   
 
-  } 
-    
 
 
   private saveSuccess=(content: any):void=>{
-    alert("Elemento Guardado con éxito.");
-    this.router.navigate(['app-form-carga-mex']);
+         alert("Elemento Guardado con éxito.");
+        this.router.navigate(['app-form-carga-mex']);
   }
 }
 

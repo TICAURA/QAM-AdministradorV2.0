@@ -43,8 +43,8 @@ const routes: Routes = [
   { path: 'admin/nom-lista', component:NomListaComponent},
   { path: 'recupera_contrasena', component:FormResetcontraComponent},
   { path: 'admin/form-carga', component:FormCargaComponent},
-  { path: 'form-carga-mex',component:FormCargaMexComponent},
-  { path: 'form-carga-col',component:FormCargaColComponent},
+  { path: 'admin/form-carga-mex',component:FormCargaMexComponent},
+  { path: 'admin/form-carga-col',component:FormCargaColComponent},
   
  
 

@@ -6,8 +6,8 @@
 		<TD>
                         <div class="custom-file">
                              
-                                <input type="file" class="form-control" id="input-custom-file" (change)="onFileChange($event)">
-                                <span id="btnUpload" class="input-group-text upload" (click)="onUpload()">Cargar Archivo</span>
+                                <input type="file" class="form-control" (change)="onFileChange($event)" name="archivo">
+                                <span  id="btnUpload" class="input-group-text upload" (click)="onUpload()">Cargar Archivo</span>
                                 
                                         
                               
@@ -33,3 +33,5 @@
 </TABLE>
 <br>
 <div class="container-fluid mb-4"><h1 class="text-center font-weight-bold">Total de registros</h1></div>
+
+

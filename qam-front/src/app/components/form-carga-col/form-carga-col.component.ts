@@ -19,63 +19,68 @@ export class FormCargaColComponent implements OnInit {
   correcto = 0;
   error = 0;
   archivos = 1;
-  files: File;
+  files: Carga;
   typeEndpoint:Endpoint = Endpoint.CARGACOL;
-  utils:UtileriaServicio=new UtileriaServicio();
+  getAllSuccess: any;
+  callFailure: any;
+  aux :File;
   
-  constructor(private activatedRoute: ActivatedRoute, private genericService:GenericService,private router:Router, private cargaService : CargaService, private rest : HttpSenderService){
-
+  constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
+  
   }
-
   private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
-
-  ngOnInit(): void {
-  }
-
-
-  onUpload(){
-
-    let form:FormData = new FormData();
-
-    console.log (this.files);
-    if(this.files !== undefined && this.files !== null){
-    form.append('archivoCarga', this.files, this.files.name);}
-    
-    try{
-      this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
-      this.correcto = 1;
+    ngOnInit(): void {
+      this.files = new Carga();
+      this.files.idCarga = "idCarga";
     }
-    catch{
-      this.error = 1;
-      
-    }
-    
-    console.log("cargado")
-  }
-
-  onFileChange(event: any){
   
-    this.files = event.target.files[0];
-    console.log(this.files);
-
-  } 
-    
-
-  private saveSuccess=(content: any):void=>{
-    alert("Elemento Guardado con éxito.");
-    this.router.navigate(['app-form-carga-col']);
-  }
-
-  onSearch(){
-
-    this.downloadFile(new String(this.utils.getparametros(Endpoint.RFACTURACION,"7")));
-
-  }
-
-  downloadFile(filename: String): void {
-    console.log (filename + "\n" );
-    this.rest
-      .download(Endpoint.RFACTURACION+filename)
-      .subscribe(blob => FileSaver.saveAs(blob, "ReporteFactura.xls")  );
-  }
+    onSearch(){
+      this.downloadFile("layoutcarga");
+      
+  
+    }
+  
+    downloadFile(filename: String): void {
+  
+      this.rest
+        .download(Endpoint.CARGAMEX+filename)
+        .subscribe(blob => FileSaver.saveAs(blob, "Layoutcarga.xls")  );
+    }
+  
+  
+    onUpload(){
+      let form:FormData = new FormData();
+  
+      form.append('idCarga',this.files.idCarga);
+  
+      if(this.files !== undefined && this.files !== null){
+      form.append('archivo', this.files.archivo, this.files.archivo.name);}
+  
+      
+  
+  
+      try{
+        
+        
+        this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
+        console.log("cargado")
+        
+      }
+      catch{
+        console.log ("error al inertar archivo");
+      }
+  
+    }
+    onFileChange(event: any){
+  
+      this.files.archivo = event.target.files[0]
+      console.log(this.files.archivo);
+    }   
+  
+  
+  
+    private saveSuccess=(content: any):void=>{
+           alert("Elemento Guardado con éxito.");
+          this.router.navigate(['app-form-carga-col']);
+    }
 }

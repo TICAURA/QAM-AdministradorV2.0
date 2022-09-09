@@ -18,7 +18,7 @@ export enum Endpoint {
   PROMOCION="promocion",
   SEGMENTO="segmento",
   NOMINA035="nom035",
-  CARGAMEX="cargamex",
-  CARGACOL="cagacol"
+  CARGAMEX="cargamexico",
+  CARGACOL="cargacolombia"
   
 }
