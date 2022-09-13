@@ -35,7 +35,7 @@ constructor(private router:Router, private cargaService : CargaService, private 
 private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
   ngOnInit(): void {
     this.files = new Carga();
-    this.files.idCarga = "idCarga";
+    this.files.idCarga = 33;
   }
 
   onSearch(){
@@ -55,7 +55,7 @@ private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error
   onUpload(){
     let form:FormData = new FormData();
 
-    form.append('idCarga',this.files.idCarga);
+    form.append('idCarga',this.files.idCarga+"");
 
     if(this.files !== undefined && this.files !== null){
     form.append('archivo', this.files.archivo, this.files.archivo.name);}

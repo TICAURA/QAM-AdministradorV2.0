@@ -31,7 +31,7 @@ export class FormCargaColComponent implements OnInit {
   private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
     ngOnInit(): void {
       this.files = new Carga();
-      this.files.idCarga = "idCarga";
+      this.files.idCarga = 33;
     }
   
     onSearch(){
@@ -51,10 +51,12 @@ export class FormCargaColComponent implements OnInit {
     onUpload(){
       let form:FormData = new FormData();
   
-      form.append('idCarga',this.files.idCarga);
+      form.append('idCarga',this.files.idCarga+"");
   
       if(this.files !== undefined && this.files !== null){
-      form.append('archivo', this.files.archivo, this.files.archivo.name);}
+
+        form.append('ArchivoColombia', this.files.archivo, this.files.archivo.name);
+      }
   
       
   
@@ -64,6 +66,7 @@ export class FormCargaColComponent implements OnInit {
         
         this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
         console.log("cargado")
+        
         
       }
       catch{

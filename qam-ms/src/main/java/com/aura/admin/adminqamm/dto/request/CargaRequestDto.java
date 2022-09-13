@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public @Getter @Setter class CargaRequestDto {
 
-	private String idCarga;
+	private int idCarga;
 	private MultipartFile archivo;
 	
 }

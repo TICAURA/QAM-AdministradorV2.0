@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
+import com.aura.admin.adminqamm.service.CargaColombiaService;
 import com.aura.admin.adminqamm.service.CargaMexicoService;
 
 @RestController
@@ -25,15 +26,15 @@ import com.aura.admin.adminqamm.service.CargaMexicoService;
 public class CargaColombiaController {
 
 	@Autowired
-	private CargaMexicoService cargaMexicoService;
+	private CargaColombiaService cargaColombiaService;
 	
 	Logger logger = LoggerFactory.getLogger(CargaColombiaController.class);
 	
 	@PostMapping("")
     public ResponseEntity<Object> insertCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
         try {
-        	logger.info(cargaColombia.getArchivo().getName());
-        	cargaMexicoService.insertCargaMexico(loggedIdUser, cargaColombia);
+        	//logger.info(cargaColombia.getArchivo().getName());
+        	cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
             return new ResponseEntity<Object>("", HttpStatus.OK);
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
