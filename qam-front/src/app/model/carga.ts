@@ -1,6 +1,6 @@
 export class Carga{
 
-    idCarga:string;
+    idCarga:number;
     archivo:File;
 
     build(content:any){

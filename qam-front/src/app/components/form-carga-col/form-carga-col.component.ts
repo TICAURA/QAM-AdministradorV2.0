@@ -23,7 +23,6 @@ export class FormCargaColComponent implements OnInit {
   typeEndpoint:Endpoint = Endpoint.CARGACOL;
   getAllSuccess: any;
   callFailure: any;
-  aux :File;
   
   constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
   
@@ -35,28 +34,36 @@ export class FormCargaColComponent implements OnInit {
     }
   
     onSearch(){
-      this.downloadFile("layoutcarga");
+      try{
+        this.downloadFile();
+     }
+     catch{
+       alert (this.error)
+     }
       
   
     }
   
-    downloadFile(filename: String): void {
+    downloadFile(): void {
   
       this.rest
-        .download(Endpoint.CARGAMEX+filename)
+        .download(Endpoint.CARGACOL)
         .subscribe(blob => FileSaver.saveAs(blob, "Layoutcarga.xls")  );
     }
   
   
     onUpload(){
       let form:FormData = new FormData();
-  
+      let extension = this.files.archivo.name.substring(this.files.archivo.name.lastIndexOf('.'),this.files.archivo.name.length);
+      if (extension !== ".xls" && extension !== ".xlsx"){
+        alert("Seleccione un archivo de excel");
+        this.router.navigate(['app-form-carga-col']);}
+      
+
       form.append('idCarga',this.files.idCarga+"");
   
       if(this.files !== undefined && this.files !== null){
-
-        form.append('ArchivoColombia', this.files.archivo, this.files.archivo.name);
-      }
+      form.append('archivo', this.files.archivo, this.files.archivo.name);}
   
       
   
@@ -67,17 +74,20 @@ export class FormCargaColComponent implements OnInit {
         this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
         console.log("cargado")
         
-        
       }
       catch{
-        console.log ("error al inertar archivo");
+        console.log ("error al insertar archivo");
       }
   
     }
     onFileChange(event: any){
   
+      
       this.files.archivo = event.target.files[0]
-      console.log(this.files.archivo);
+      console.log(this.files.archivo.name);
+      
+
+      
     }   
   
   

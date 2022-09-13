@@ -4,7 +4,7 @@
 	<TR ALIGN=CENTER>
         <TD>
             <div class="custom-file">
-                <input type="file" class="form-control" id="input-custom-file" (change)="onFileChange($event)">
+                <input type="file" class="form-control" id="input-custom-file" accept=".xls,.xlsx" (change)="onFileChange($event)">
                 <span id="btnUpload" class="input-group-text upload" (click)="onUpload()">Cargar Archivo</span>            
             </div>
 
