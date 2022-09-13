@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -52,6 +53,9 @@ public class CargaColombiaService {
 	private DetCargaRepository detCargaRepository;
 	
     public HSSFWorkbook obtenerWorkBook(int loggedIdUser) throws BusinessException{
+    	
+    	CellStyle style = null;
+    	
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet();
         workbook.setSheetName(0, "Layout Colombia");
@@ -106,7 +110,56 @@ public class CargaColombiaService {
 	}
 	
 	private void procesarXls(InputStream inputStream, String nombreArchivo) {
-		List<ColaboradorDto> colaboradorDTO = new ArrayList<ColaboradorDto>();
+		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
+		
+		List<DetCarga> listaDetCarga = new ArrayList<DetCarga>();
+		
+		try {
+			 HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+			 HSSFSheet firstSheet = workbook.getSheetAt(0);
+			 Iterator iterator = firstSheet.iterator();
+		        	        
+			 DataFormatter formatter = new DataFormatter();
+			
+			 while (iterator.hasNext()) {
+		    	DetCarga detCargaFila = new DetCarga();
+		    	
+		    	HSSFRow nextRow = (HSSFRow) iterator.next();
+	            Iterator cellIterator = nextRow.cellIterator();
+	            
+	            if (nextRow.getRowNum()>0) {
+	            	CargaMasivaDto cargaMasivaDTO = new CargaMasivaDto();			            
+	            	cargaMasivaDTO.setFila(nextRow.getRowNum());
+	            	
+		            while(cellIterator.hasNext()) {
+		            	HSSFCell cell = (HSSFCell) cellIterator.next();
+			            String contenidoCelda = formatter.formatCellValue(cell);
+			      
+			            int numCelda = cell.getColumnIndex();
+			            
+			            logger.info("celda: " + contenidoCelda+" :: INDEX "+numCelda);
+			            
+			            caseFila(numCelda, detCargaFila, contenidoCelda, cargaMasivaDTO);
+			                   		            
+		            }
+		            
+		            listaDetCarga.add(detCargaFila);
+	            	
+		            if (cargaMasivaDTO.getErrores().isEmpty()) {
+			            cargaMasivaDTO.setProcesar(Boolean.TRUE);
+			        } else {
+			           	cargaMasivaDTO.setProcesar(Boolean.FALSE);
+			        }	
+		            listaCargaDTO.add(cargaMasivaDTO);
+	            }	            
+	        }	            
+		} catch (IOException e) {			
+			e.printStackTrace();
+		} 
+		cargaMasiva(listaDetCarga, nombreArchivo);
+	}
+
+	private void procesarXlsx(InputStream inputStream, String nombreArchivo) {
 		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
 		
 		List<DetCarga> listaDetCarga = new ArrayList<DetCarga>();
@@ -117,8 +170,7 @@ public class CargaColombiaService {
 		    Iterator iterator = firstSheet.iterator();
 		        	        
 		    DataFormatter formatter = new DataFormatter();
-		    FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-		    
+		   
 		    while (iterator.hasNext()) {
 		    	DetCarga detCargaFila = new DetCarga();
 		    	
@@ -142,10 +194,9 @@ public class CargaColombiaService {
 		            }
 		            
 		            listaDetCarga.add(detCargaFila);
-//		            cargaMasivaDTO.setColaboradorDTO(colaboradorFila);
 	            	
 		            if (cargaMasivaDTO.getErrores().isEmpty()) {
-			            	cargaMasivaDTO.setProcesar(Boolean.TRUE);
+			            cargaMasivaDTO.setProcesar(Boolean.TRUE);
 			        } else {
 			           	cargaMasivaDTO.setProcesar(Boolean.FALSE);
 			        }	
@@ -157,7 +208,7 @@ public class CargaColombiaService {
 		} 
 		cargaMasiva(listaDetCarga, nombreArchivo);	
 	}
-
+	
 	private void cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
 		
 		AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
@@ -170,11 +221,6 @@ public class CargaColombiaService {
 		
 	}
 
-	private void procesarXlsx(InputStream inputStream, String nombreArchivo) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private AuxCarga cargarAuxBD(String nombreArchivo) {
 		AuxCarga auxCargaBD = new AuxCarga();
 		
@@ -183,13 +229,9 @@ public class CargaColombiaService {
 		
 		return auxCargaBD;
 	}
-	
-	private CellStyle style = null;
 
 	private void caseFila (int numColumna, DetCarga detCargaFila, String contenidoCelda, CargaMasivaDto cargaMasivaDTO) {
-		
-			SimpleDateFormat dateFromat = new SimpleDateFormat("dd-MM-yy");
-			
+
 			try {
 				switch (numColumna) {
 				case 0:
