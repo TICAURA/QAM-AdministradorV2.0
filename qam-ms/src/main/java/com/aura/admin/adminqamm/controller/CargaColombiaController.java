@@ -18,14 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.service.CargaColombiaService;
-import com.aura.admin.adminqamm.service.CargaMexicoService;
 
 @RestController
 @RequestMapping("/cargacolombia")
