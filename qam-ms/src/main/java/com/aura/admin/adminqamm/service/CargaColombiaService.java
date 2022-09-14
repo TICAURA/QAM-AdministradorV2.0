@@ -104,9 +104,13 @@ public class CargaColombiaService {
 			logger.error("ERROR al leer el archivo para la carga masiva colombia :: ",e.getMessage());
 		}
 		
+<<<<<<< HEAD
 		
 		
 		logger.info("/**** Informacion cargada correctamente  ****/" + cargaColombia.getArchivo().getOriginalFilename());
+=======
+		logger.info("/**** Informacion carga correctamente  ****/" + cargaColombia.getArchivo().getName());
+>>>>>>> 779f582c054793bddf498416c7c3e11f46097e80
 	}
 	
 	private void procesarXls(InputStream inputStream, String nombreArchivo) {
