@@ -83,7 +83,7 @@ public class CargaColombiaService {
 	public void insertCargaColombia(int loggedIdUser, CargaRequestDto cargaColombia) throws BusinessException {
 		
 		if (logger.isInfoEnabled()) {
-			logger.info("/**** Procesa archivo carga masiva colombia  ****/" + cargaColombia.getArchivo().getName());
+			logger.info("/**** Procesa archivo carga masiva colombia  ****/" + cargaColombia.getArchivo().getOriginalFilename());
 		}
 		
 		try {
@@ -91,7 +91,7 @@ public class CargaColombiaService {
 				throw new BusinessException("Archivo vacio", 401);
 			}
 		
-			String nombreArchivo = cargaColombia.getArchivo().getName();
+			String nombreArchivo = cargaColombia.getArchivo().getOriginalFilename();
 			
 			if (nombreArchivo.endsWith(".xlsx")) {
 				procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
@@ -101,12 +101,12 @@ public class CargaColombiaService {
 				throw new BusinessException("Error formato incorrecto.", 401);
 			}
 		} catch (IOException e) {
-			logger.error("ERROR al leer el archivo para la carga masiva mexico :: ",e.getMessage());
+			logger.error("ERROR al leer el archivo para la carga masiva colombia :: ",e.getMessage());
 		}
 		
 		
 		
-		logger.info("/**** Informacion carga correctamente  ****/" + cargaColombia.getArchivo().getName());
+		logger.info("/**** Informacion cargada correctamente  ****/" + cargaColombia.getArchivo().getOriginalFilename());
 	}
 	
 	private void procesarXls(InputStream inputStream, String nombreArchivo) {
@@ -140,6 +140,10 @@ public class CargaColombiaService {
 			            logger.info("celda: " + contenidoCelda+" :: INDEX "+numCelda);
 			            
 			            caseFila(numCelda, detCargaFila, contenidoCelda, cargaMasivaDTO);
+			            
+			            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			    		String createAt = sdf.format(new Date());
+			    		detCargaFila.setCreatedAt(createAt);
 			                   		            
 		            }
 		            
@@ -231,7 +235,7 @@ public class CargaColombiaService {
 	}
 
 	private void caseFila (int numColumna, DetCarga detCargaFila, String contenidoCelda, CargaMasivaDto cargaMasivaDTO) {
-
+		
 			try {
 				switch (numColumna) {
 				case 0:
@@ -271,7 +275,7 @@ public class CargaColombiaService {
 			} catch (Exception e) {
 				logger.error(" Error generico :: ");
 				StringBuilder errorStr = new StringBuilder();
-				errorStr.append("Se presentó un error inesperado. Por favor valide los datos ")
+				errorStr.append("Se presentï¿½ un error inesperado. Por favor valide los datos ")
 					.append(cargaMasivaDTO.getFila().intValue()+1)
 					.append(", columna ").append(numColumna+1);
 				cargaMasivaDTO.getErrores().add(errorStr.toString());
