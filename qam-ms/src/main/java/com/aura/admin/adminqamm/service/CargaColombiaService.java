@@ -104,8 +104,6 @@ public class CargaColombiaService {
 			logger.error("ERROR al leer el archivo para la carga masiva mexico :: ",e.getMessage());
 		}
 		
-		
-		
 		logger.info("/**** Informacion carga correctamente  ****/" + cargaColombia.getArchivo().getName());
 	}
 	
