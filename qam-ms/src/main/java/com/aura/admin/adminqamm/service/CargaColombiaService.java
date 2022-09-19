@@ -3,7 +3,6 @@ package com.aura.admin.adminqamm.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,7 +17,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,12 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aura.admin.adminqamm.dao.CargaColombiaDao;
 import com.aura.admin.adminqamm.dto.CargaMasivaDto;
-import com.aura.admin.adminqamm.dto.ClienteDto;
 import com.aura.admin.adminqamm.dto.ColaboradorDto;
-import com.aura.admin.adminqamm.dto.CuentaBancoDto;
-import com.aura.admin.adminqamm.dto.DatosContactoDto;
-import com.aura.admin.adminqamm.dto.PersonaDto;
+import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.model.AuxCarga;
@@ -51,6 +46,9 @@ public class CargaColombiaService {
 	
 	@Autowired
 	private DetCargaRepository detCargaRepository;
+	
+	@Autowired
+	private CargaColombiaDao cargaColombiaDao;
 	
     public HSSFWorkbook obtenerWorkBook(int loggedIdUser) throws BusinessException{
     	
@@ -211,7 +209,7 @@ public class CargaColombiaService {
 		cargaMasiva(listaDetCarga, nombreArchivo);	
 	}
 	
-	private void cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
+	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
 		
 		AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
 		auxCargaRepository.save(cargarAuxBD);
@@ -221,6 +219,46 @@ public class CargaColombiaService {
 			detCargaRepository.save(detCarga);
 		}
 		
+		try {
+			cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), "AAA010101AA2");
+			
+			List<DetCarga> detCargaList = detCargaRepository.findByIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+			
+			Integer exitosos = detCargaRepository.countByIdsituacion(cargarAuxBD.getIdCargaMasiva(), "D, N");
+				
+			Integer fallidos = detCargaRepository.countByIdsituacion(cargarAuxBD.getIdCargaMasiva(), "E");
+			
+			return generaResponse(detCargaList, exitosos, fallidos);
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	private ResponseCargaColombiaDto generaResponse(List<DetCarga> detCargaList, Integer exitosos,
+			Integer fallidos) {
+		
+		ResponseCargaColombiaDto responseCarga = new ResponseCargaColombiaDto();
+		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
+		
+		responseCarga.setProcesados(detCargaList.size());
+		responseCarga.setExitosos(exitosos);
+		responseCarga.setFallidos(fallidos);
+		
+		for (DetCarga detCargaItem : detCargaList) {
+			ColaboradorDto colaboradorRes = new ColaboradorDto();
+			
+			colaboradorRes.setNombre(detCargaItem.getName());
+			colaboradorRes.setApellidoPat(detCargaItem.getSurname());
+			colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
+			
+			colaboradores.add(colaboradorRes);
+		}
+		
+		responseCarga.setColaboradores(colaboradores);
+		
+		return responseCarga;
 	}
 
 	private AuxCarga cargarAuxBD(String nombreArchivo) {
