@@ -213,10 +213,12 @@ public class CargaColombiaService {
 		
 		AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
 		auxCargaRepository.save(cargarAuxBD);
-		
+		logger.info("/¨**** Persistio AuxCarga ****/");
 		for (DetCarga detCarga : listaDetCarga) {
+			logger.info("/¨**** Carga masiva item :: "+detCarga.getName());
 			detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
 			detCargaRepository.save(detCarga);
+			logger.info("/¨**** Persistio DetCarga ****/");
 		}
 		
 		try {
@@ -258,6 +260,10 @@ public class CargaColombiaService {
 		
 		responseCarga.setColaboradores(colaboradores);
 		
+		logger.info("/**** Procesados :: "+responseCarga.getProcesados());
+		logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
+		logger.info("/**** Fallidos :: "+responseCarga.getFallidos());
+	
 		return responseCarga;
 	}
 
@@ -267,6 +273,7 @@ public class CargaColombiaService {
 		auxCargaBD.setFechaAlta(new Date());
 		auxCargaBD.setNombreArchivo(nombreArchivo);	
 		
+		logger.info("/¨**** Cargo datos auxiliar ****/");
 		return auxCargaBD;
 	}
 

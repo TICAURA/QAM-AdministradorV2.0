@@ -36,7 +36,7 @@ public class CargaColombiaDao {
 	        		queryStr.append(idCargaMasiva)
 	        		.append(", '").append(rfcCliente)
 	        		.append("');");
-	        
+	        LOGGER.info("/**** Call Funcion Inserta Aguila ****/");
 	        try (Connection con = dataSource.getConnection(); CallableStatement cStmt = con.prepareCall(queryStr.toString())){
 
 	            cStmt.execute();
