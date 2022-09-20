@@ -33,6 +33,7 @@ import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.model.AuxCarga;
 import com.aura.admin.adminqamm.model.DetCarga;
+import com.aura.admin.adminqamm.model.DetCargaId;
 import com.aura.admin.adminqamm.repository.AuxCargaRepository;
 import com.aura.admin.adminqamm.repository.DetCargaRepository;
 
@@ -215,8 +216,12 @@ public class CargaColombiaService {
 		auxCargaRepository.save(cargarAuxBD);
 		logger.info("/¨**** Persistio AuxCarga ****/");
 		for (DetCarga detCarga : listaDetCarga) {
-			logger.info("/¨**** Carga masiva item :: "+detCarga.getName());
-			detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+			logger.info("/¨**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
+			DetCargaId detCargaId = new DetCargaId();
+			
+			detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+			detCarga.setDetCargaId(detCargaId);
+			
 			detCargaRepository.save(detCarga);
 			logger.info("/¨**** Persistio DetCarga ****/");
 		}
@@ -224,7 +229,7 @@ public class CargaColombiaService {
 		try {
 			cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), "AAA010101AA2");
 			
-			List<DetCarga> detCargaList = detCargaRepository.findByIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+			List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
 			
 			Integer exitosos = detCargaRepository.countByIdsituacion(cargarAuxBD.getIdCargaMasiva(), "D, N");
 				

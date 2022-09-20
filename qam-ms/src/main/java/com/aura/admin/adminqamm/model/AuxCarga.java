@@ -13,7 +13,7 @@ import java.util.Date;
 public class AuxCarga {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_carga_masiva")
     private Integer idCargaMasiva;
     
