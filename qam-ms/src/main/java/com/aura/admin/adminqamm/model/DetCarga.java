@@ -10,8 +10,13 @@ import javax.persistence.*;
 @Table(name = "det_carga_aguilas")
 public class DetCarga {
 	
-	@EmbeddedId
-	private DetCargaId detCargaId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_det_carga_aguilas")
+    private Integer idDetCarga;
+    
+    @Column(name="id_carga_masiva")
+    private Integer idCargaMasiva;
 
     @Column(name="name")
     private String name;

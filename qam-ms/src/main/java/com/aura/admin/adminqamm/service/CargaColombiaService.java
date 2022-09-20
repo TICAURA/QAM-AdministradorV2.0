@@ -217,10 +217,11 @@ public class CargaColombiaService {
 		logger.info("/¨**** Persistio AuxCarga ****/");
 		for (DetCarga detCarga : listaDetCarga) {
 			logger.info("/¨**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
-			DetCargaId detCargaId = new DetCargaId();
+//			DetCargaId detCargaId = new DetCargaId();
 			
-			detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
-			detCarga.setDetCargaId(detCargaId);
+//			detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+			detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+//			detCarga.setDetCargaId(detCargaId);
 			
 			detCargaRepository.save(detCarga);
 			logger.info("/¨**** Persistio DetCarga ****/");
