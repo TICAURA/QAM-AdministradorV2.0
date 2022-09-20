@@ -32,10 +32,10 @@ public class CargaColombiaDao {
 	public String insertaAguilaFuncion(Integer idCargaMasiva, String rfcCliente) throws BusinessException{
 
 	        DataSource dataSource = dataSourceConfig.getDataSource();
-	        StringBuilder queryStr = new StringBuilder("call F_INSERTA_AGUILA(");
+	        StringBuilder queryStr = new StringBuilder("{ ? = call F_INSERTA_AGUILA(");
 	        		queryStr.append(idCargaMasiva)
 	        		.append(", '").append(rfcCliente)
-	        		.append("');");
+	        		.append("')};");
 	        LOGGER.info("/**** Call Funcion Inserta Aguila ****/");
 	        try (Connection con = dataSource.getConnection(); CallableStatement cStmt = con.prepareCall(queryStr.toString())){
 
