@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.aura.admin.adminqamm.dao.CargaColombiaDao;
 import com.aura.admin.adminqamm.dto.CargaMasivaDto;
+import com.aura.admin.adminqamm.dto.ClienteDto;
 import com.aura.admin.adminqamm.dto.ColaboradorDto;
 import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
@@ -262,10 +263,14 @@ public class CargaColombiaService {
 		
 		for (DetCarga detCargaItem : detCargaList) {
 			ColaboradorDto colaboradorRes = new ColaboradorDto();
+			ClienteDto clienteRes = new ClienteDto();
 			
 			colaboradorRes.setNombre(detCargaItem.getName());
 			colaboradorRes.setApellidoPat(detCargaItem.getSurname());
 			colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
+			colaboradorRes.setDescError(detCargaItem.getDescError());
+			colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
+			clienteRes.setRazon(detCargaItem.getPlate());
 			
 			colaboradores.add(colaboradorRes);
 		}

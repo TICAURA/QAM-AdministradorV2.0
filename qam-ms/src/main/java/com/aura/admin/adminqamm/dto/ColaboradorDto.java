@@ -58,6 +58,10 @@ class ColaboradorDto {
 
     private Double distribucionImssComplemento;
     
+    private String numeroDocumento;
+    
+    private String descError;
+    
     //Relacion
     private PersonaDto personaDto;
     
