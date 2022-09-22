@@ -38,9 +38,8 @@ public class CargaColombiaController {
 	@PostMapping("")
     public ResponseEntity<Object> insertCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
         try {
-        	//logger.info(cargaColombia.getArchivo().getName());
-        	ResponseCargaColombiaDto ResponseCargaColombiaDto = cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
-            return new ResponseEntity<Object>(ResponseCargaColombiaDto, HttpStatus.OK);
+        	ResponseCargaColombiaDto responseCargaColombiaDto = cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
+            return new ResponseEntity<Object>(responseCargaColombiaDto, HttpStatus.OK);
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
         }catch (Exception e){

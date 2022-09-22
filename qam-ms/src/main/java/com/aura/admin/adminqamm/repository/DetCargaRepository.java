@@ -12,8 +12,11 @@ import org.springframework.stereotype.Repository;
 public interface DetCargaRepository extends JpaRepository<DetCarga,Integer>{
 
 	
-	@Query("SELECT COUNT(dc) FROM DetCarga dc WHERE dc.idCargaMasiva = ?1 AND dc.idSituacion IN ?2")
-	Integer countByIdsituacion(Integer idCargaMasiva, String valorSituacion);
+	@Query("SELECT COUNT(dc) FROM DetCarga dc WHERE dc.idCargaMasiva = ?1 AND (dc.idSituacion = ?2 OR dc.idSituacion = ?3)")
+	Integer countSituacionExito(Integer idCargaMasiva, String situacionD, String situacionN);
+	
+	@Query("SELECT COUNT(dc) FROM DetCarga dc WHERE dc.idCargaMasiva = ?1 AND dc.idSituacion = ?2")
+	Integer countSituacionError(Integer idCargaMasiva, String situacionE);
 
 	@Query("SELECT dc FROM DetCarga dc WHERE dc.idCargaMasiva = ?1")
 	List<DetCarga> getByIdCargaMasiva(Integer idCargaMasiva);
