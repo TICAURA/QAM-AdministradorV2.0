@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from 'src/app/model/cliente';
 import { Endpoint } from 'src/app/utils/endpoint';
 import { Errors } from 'src/app/utils/errors';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLinkWithHref } from '@angular/router';
 import { GenericService } from 'src/app/service/generic.service';
 import { Catalogue } from 'src/app/model/catalogue';
 import { Servicio } from 'src/app/model/servicio';
@@ -28,6 +28,9 @@ typeEndpoint:Endpoint = Endpoint.CARGAMEX;
 getAllSuccess: any;
 callFailure: any;
 aux :File;
+   headers: any;
+   storageSvc: any;
+   http: any;
 
 constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
 
@@ -37,18 +40,11 @@ private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error
     this.files = new Carga();
     this.files.idCarga = 33;
   }
-
-  onSearch(){
-    this.downloadFile("layoutcarga");
+ 
+ 
+  download() {
     
-
-  }
-
-  downloadFile(filename: String): void {
-
-    this.rest
-      .download(Endpoint.CARGAMEX+filename)
-      .subscribe(blob => FileSaver.saveAs(blob, "Layoutcarga.xls")  );
+      //<a RouterLinkWithHref>
   }
 
 

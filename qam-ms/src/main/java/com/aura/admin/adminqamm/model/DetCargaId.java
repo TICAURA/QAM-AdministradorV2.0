@@ -24,7 +24,7 @@ public class DetCargaId implements Serializable {
 	 */
 	private static final long serialVersionUID = 9002904132988832861L;
 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_det_carga_aguilas")
     private Integer idDetCarga;
     

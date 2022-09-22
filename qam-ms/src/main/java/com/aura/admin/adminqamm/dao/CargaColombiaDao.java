@@ -29,7 +29,7 @@ public class CargaColombiaDao {
 
 	private final static Logger LOGGER = LogManager.getLogger(CargaColombiaDao.class);
 
-	public String insertaAguilaFuncion(Integer idCargaMasiva, String rfcCliente) throws BusinessException{
+	public void insertaAguilaFuncion(Integer idCargaMasiva, String rfcCliente) throws BusinessException{
 
 	        DataSource dataSource = dataSourceConfig.getDataSource();
 	        StringBuilder queryStr = new StringBuilder("{ ? = call F_INSERTA_AGUILA(");
@@ -41,10 +41,10 @@ public class CargaColombiaDao {
 
 	            cStmt.execute();
 	        
-	            String resul = cStmt.getString(1);
-	            LOGGER.info("/**** Se ejecuto F_INSERTA_AGUILA :: "+resul);
+	            //String resul = cStmt.getString(0);
+	           //LOGGER.info("/**** Se ejecuto F_INSERTA_AGUILA :: "+resul);
 	            
-	            return resul;
+	           // return resul;
 	        }catch(SQLException e) {
 	            LOGGER.error("Error al ejecutar funcion carga aguila: "+e.getMessage(),e);
 	            throw new BusinessException(e.getMessage(),500);

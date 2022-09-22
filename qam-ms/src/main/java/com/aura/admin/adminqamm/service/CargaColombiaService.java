@@ -79,8 +79,9 @@ public class CargaColombiaService {
         
     }
 	
-	public void insertCargaColombia(int loggedIdUser, CargaRequestDto cargaColombia) throws BusinessException {
+	public ResponseCargaColombiaDto insertCargaColombia(int loggedIdUser, CargaRequestDto cargaColombia) throws BusinessException {
 		
+		ResponseCargaColombiaDto ResponseCargaColombiaDto = null;
 		if (logger.isInfoEnabled()) {
 			logger.info("/**** Procesa archivo carga masiva colombia  ****/" + cargaColombia.getArchivo().getOriginalFilename());
 		}
@@ -95,7 +96,7 @@ public class CargaColombiaService {
 			if (nombreArchivo.endsWith(".xlsx")) {
 				procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
 			} else if (nombreArchivo.endsWith(".xls")) {
-				procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
+				ResponseCargaColombiaDto = procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
 			} else {
 				throw new BusinessException("Error formato incorrecto.", 401);
 			}
@@ -104,9 +105,10 @@ public class CargaColombiaService {
 		}
 		
 		logger.info("/**** Informacion cargada correctamente  ****/");
+		return ResponseCargaColombiaDto;
 	}
 	
-	private void procesarXls(InputStream inputStream, String nombreArchivo) {
+	private ResponseCargaColombiaDto procesarXls(InputStream inputStream, String nombreArchivo) {
 		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
 		
 		List<DetCarga> listaDetCarga = new ArrayList<DetCarga>();
@@ -158,6 +160,9 @@ public class CargaColombiaService {
 			e.printStackTrace();
 		} 
 		cargaMasiva(listaDetCarga, nombreArchivo);
+		ResponseCargaColombiaDto ResponseCargaColombiaDto = cargaMasiva(listaDetCarga, nombreArchivo);	
+		
+		return ResponseCargaColombiaDto;
 	}
 
 	private void procesarXlsx(InputStream inputStream, String nombreArchivo) {
@@ -207,16 +212,17 @@ public class CargaColombiaService {
 		} catch (IOException e) {			
 			e.printStackTrace();
 		} 
-		cargaMasiva(listaDetCarga, nombreArchivo);	
+		ResponseCargaColombiaDto ResponseCargaColombiaDto = cargaMasiva(listaDetCarga, nombreArchivo);	
+		logger.info("****INFO***\n" );
 	}
 	
 	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
 		
 		AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
 		auxCargaRepository.save(cargarAuxBD);
-		logger.info("/¨**** Persistio AuxCarga ****/");
+		logger.info("/ï¿½**** Persistio AuxCarga ****/");
 		for (DetCarga detCarga : listaDetCarga) {
-			logger.info("/¨**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
+			logger.info("/ï¿½**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
 //			DetCargaId detCargaId = new DetCargaId();
 			
 //			detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
@@ -224,7 +230,7 @@ public class CargaColombiaService {
 //			detCarga.setDetCargaId(detCargaId);
 			
 			detCargaRepository.save(detCarga);
-			logger.info("/¨**** Persistio DetCarga ****/");
+			logger.info("/ï¿½**** Persistio DetCarga ****/");
 		}
 		
 		try {
@@ -279,7 +285,7 @@ public class CargaColombiaService {
 		auxCargaBD.setFechaAlta(new Date());
 		auxCargaBD.setNombreArchivo(nombreArchivo);	
 		
-		logger.info("/¨**** Cargo datos auxiliar ****/");
+		logger.info("/ï¿½**** Cargo datos auxiliar ****/");
 		return auxCargaBD;
 	}
 
