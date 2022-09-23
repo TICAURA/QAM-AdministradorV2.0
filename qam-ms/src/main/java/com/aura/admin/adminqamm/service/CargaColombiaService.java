@@ -33,9 +33,11 @@ import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.model.AuxCarga;
+import com.aura.admin.adminqamm.model.Cliente;
 import com.aura.admin.adminqamm.model.DetCarga;
 import com.aura.admin.adminqamm.model.DetCargaId;
 import com.aura.admin.adminqamm.repository.AuxCargaRepository;
+import com.aura.admin.adminqamm.repository.ClientRepository;
 import com.aura.admin.adminqamm.repository.DetCargaRepository;
 
 @Service
@@ -51,6 +53,18 @@ public class CargaColombiaService {
 	
 	@Autowired
 	private CargaColombiaDao cargaColombiaDao;
+	
+	@Autowired
+	private ClientRepository clienteRepository;
+	
+	private static final String RFC_CARGA_COLOMBIA = "AAA010101AA2";
+	
+	private static final String SITUACION_CARGA_D = "D";
+	
+	private static final String SITUACION_CARGA_N = "N";
+	
+	private static final String SITUACION_CARGA_E = "E";
+	
 	
     public HSSFWorkbook obtenerWorkBook(int loggedIdUser) throws BusinessException{
     	
@@ -235,13 +249,13 @@ public class CargaColombiaService {
 		}
 		
 		try {
-			cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), "AAA010101AA2");
+			cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), RFC_CARGA_COLOMBIA);
 			
 			List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
 			
-			Integer exitosos = detCargaRepository.countSituacionExito(cargarAuxBD.getIdCargaMasiva(), "D", "N");
+			Integer exitosos = detCargaRepository.countSituacionExito(cargarAuxBD.getIdCargaMasiva(), SITUACION_CARGA_D, SITUACION_CARGA_N);
 				
-			Integer fallidos = detCargaRepository.countSituacionError(cargarAuxBD.getIdCargaMasiva(), "E");
+			Integer fallidos = detCargaRepository.countSituacionError(cargarAuxBD.getIdCargaMasiva(), SITUACION_CARGA_E);
 			
 			return generaResponse(detCargaList, exitosos, fallidos);
 		} catch (BusinessException e) {
@@ -257,6 +271,8 @@ public class CargaColombiaService {
 		ResponseCargaColombiaDto responseCarga = new ResponseCargaColombiaDto();
 		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
 		
+		Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
+		
 		responseCarga.setProcesados(detCargaList.size());
 		responseCarga.setExitosos(exitosos);
 		responseCarga.setFallidos(fallidos);
@@ -270,7 +286,7 @@ public class CargaColombiaService {
 			colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
 			colaboradorRes.setDescError(detCargaItem.getDescError());
 			colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
-			clienteRes.setRazon(detCargaItem.getPlate());
+			clienteRes.setRazon(clienteColombia.getRazon());
 			
 			colaboradores.add(colaboradorRes);
 		}
