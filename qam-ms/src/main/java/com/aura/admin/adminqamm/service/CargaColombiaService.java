@@ -287,6 +287,7 @@ public class CargaColombiaService {
 			colaboradorRes.setDescError(detCargaItem.getDescError());
 			colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
 			clienteRes.setRazon(clienteColombia.getRazon());
+			colaboradorRes.setClienteDto(clienteRes);
 			
 			colaboradores.add(colaboradorRes);
 		}
