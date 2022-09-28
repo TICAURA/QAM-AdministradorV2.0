@@ -74,7 +74,7 @@ export class CargaMexComponent implements OnInit {
     let extension = this.files.archivo.name.substring(this.files.archivo.name.lastIndexOf('.'),this.files.archivo.name.length);
     if (extension !== ".xls" && extension !== ".xlsx"){
         alert("Seleccione un archivo de excel");
-        this.router.navigate(['app-form-carga-col']);}
+        this.router.navigate(['app-form-carga-mex']);}
       
 
     form.append('idCarga',this.files.idCarga+"");

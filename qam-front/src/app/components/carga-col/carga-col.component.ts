@@ -43,10 +43,14 @@ export class CargaColComponent implements OnInit {
   tableHeaders: Array<string>;
   tableName: String = "Tabla de registros";
   mostrarTabla: boolean = true;
-  cargando:boolean=false;
+  cargando: boolean=false;
   tittle:string;
 
-  private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
+  private callFailureShowMessage = (content:any,error:Errors) :void =>{
+    alert(error);
+    this.mostrarTabla = true;
+    this.cargando = false;
+  } 
 
   
   
@@ -89,18 +93,14 @@ export class CargaColComponent implements OnInit {
     }
   
       
-    try{
+  
 
-        this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
-        console.log("cargando...")
-        this.mostrarTabla = false;
-        this.cargando = true
+    this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
+    console.log("cargando...")
+    this.mostrarTabla = false;
+    this.cargando = true
 
-    }catch{  
-      console.log ("error al cargar archivo");
-      this.mostrarTabla = true;
-      this.cargando = false;
-    }
+
   
   }
   onFileChange(event: any){
@@ -131,9 +131,6 @@ export class CargaColComponent implements OnInit {
     this.tableHeaders = new Array<string>();
     console.log(content);
 
-     var data=Object.keys(content).map(function (key){return[Number(key), content[key]];});
-
-     var dataSource = Object.entries(content);
 
      console.log(content.colaboradores);
 

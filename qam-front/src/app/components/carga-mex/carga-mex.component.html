@@ -28,3 +28,29 @@
 </TABLE>
 <br>
 <br>
+
+
+<table class="table table-bordered table-hover table-dark table-striped">
+    <thead>
+        <tr>
+            <ng-container *ngFor="let header of tableHeaders">
+                <th>{{header}}</th>
+            </ng-container>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let rowData of tableFields">
+            <tr>
+
+                <ng-container *ngFor="let field of rowData; let i= index">
+
+                    <td class="align-middle">{{field}}</td>
+
+                </ng-container>
+
+            </tr>
+
+        </ng-container>
+
+    </tbody>
+</table> 
