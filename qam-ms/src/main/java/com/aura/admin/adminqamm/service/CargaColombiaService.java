@@ -211,6 +211,10 @@ public class CargaColombiaService {
 			            logger.info("celda: " + contenidoCelda+" :: INDEX "+numCelda);
 			            
 			            caseFila(numCelda, detCargaFila, contenidoCelda, cargaMasivaDTO);
+			            
+			            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			    		String createAt = sdf.format(new Date());
+			    		detCargaFila.setCreatedAt(createAt);
 			                   		            
 		            }
 		            
@@ -290,6 +294,8 @@ public class CargaColombiaService {
 			colaboradorRes.setClienteDto(clienteRes);
 			
 			colaboradores.add(colaboradorRes);
+			
+			logger.info( "%%%%%" + detCargaItem.getDescError() + "%%%%%");
 		}
 		
 		responseCarga.setColaboradores(colaboradores);

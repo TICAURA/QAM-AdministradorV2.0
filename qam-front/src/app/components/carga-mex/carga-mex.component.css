@@ -1,0 +1,10 @@
+p {
+    font-family: Lato;
+  }
+  .btn{
+    padding: 10px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+  }

@@ -1,0 +1,30 @@
+<h1>Carga colaborador México</h1><br>
+
+<TABLE BORDER align="center">
+	<TR ALIGN=CENTER>
+        <TD>
+            <div class="custom-file">
+                <input type="file" class="form-control" id="input-custom-file" accept=".xls,.xlsx" (change)="onFileChange($event)">
+                <span id="btnUpload" class="input-group-text upload" (click)="onUpload()">Cargar Archivo</span>            
+            </div>
+
+    	<TD><a href="../../../assets/Layout_carga_colaboradores.xlsx"class="btn btn-default" target="_blank" download={{tittle}} >Descargar Layout</a>
+	</TR>
+</TABLE>
+<br>
+<TABLE BORDER align="center">
+	<TR ALIGN=CENTER>
+		<td WIDTH="500"><label class="form-label" >Se procesaron : </label>
+        <td WIDTH="500"><label class="form-label">Exitoso : </label>
+        <td WIDTH="500"><label class="form-label">Fallido : </label>
+		
+	</TR>
+    <TR ALIGN=CENTER>
+	    <td WIDTH="500"> <input type="text" id="procesado" size="auto" disabled = "true" value= {{procesados}}>
+        <td WIDTH="500"> <input type="text" id="successful" size="auto" disabled = "true" value = {{correcto}}>
+        <td WIDTH="500"> <input type="text" id="error" size="auto" disabled = "true" value={{error}}>
+		
+	</TR>
+</TABLE>
+<br>
+<br>
