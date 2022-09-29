@@ -6,12 +6,7 @@ import * as FileSaver from 'file-saver';
 import { CargaService } from 'src/app/service/carga.service';
 import { Carga } from 'src/app/model/carga';
 import { HttpSenderService } from 'src/app/service/http-sender.service';
-import { CommonModule } from '@angular/common';
 import { cargaCol } from 'src/app/model/cargaCol';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppModule } from 'src/app/app.module';
-import { Content } from '@angular/compiler/src/render3/r3_ast';
-import { localizedString } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-carga-col',
@@ -48,6 +43,7 @@ export class CargaColComponent implements OnInit {
 
   private callFailureShowMessage = (content:any,error:Errors) :void =>{
     alert(error);
+    console.log(content);
     this.mostrarTabla = true;
     this.cargando = false;
   } 
@@ -73,18 +69,14 @@ export class CargaColComponent implements OnInit {
   
       this.rest
         .download(Endpoint.CARGACOL)
-        .subscribe(blob => FileSaver.saveAs(blob, this.tittle+".xlsx")  );
+        .subscribe(blob => FileSaver.saveAs(blob, this.tittle+".xls")  );
+      alert("Archivo descargado");
   }
   
   
   onUpload(){
 
     let form:FormData = new FormData();
-    let extension = this.files.archivo.name.substring(this.files.archivo.name.lastIndexOf('.'),this.files.archivo.name.length);
-    if (extension !== ".xls" && extension !== ".xlsx"){
-        alert("Seleccione un archivo de excel");
-        this.router.navigate(['app-form-carga-col']);}
-      
 
     form.append('idCarga',this.files.idCarga+"");
   
@@ -94,11 +86,10 @@ export class CargaColComponent implements OnInit {
   
       
   
-
     this.cargaService.insert(this.typeEndpoint, form, this.saveSuccess, this.callFailureShowMessage)
     console.log("cargando...")
     this.mostrarTabla = false;
-    this.cargando = true
+    this.cargando = true;
 
 
   
@@ -113,7 +104,7 @@ export class CargaColComponent implements OnInit {
   
   private saveSuccess=(content: any):void=>{
 
-          alert("Elemento Guardado con éxito.");
+          alert("Elemento guardado con éxito.");
           this.buildTable(content)
           this.correcto = content.exitosos;
           this.error = content.fallidos;    
@@ -129,10 +120,6 @@ export class CargaColComponent implements OnInit {
 
     this.tableFields = new Array<Array<string>>();    
     this.tableHeaders = new Array<string>();
-    console.log(content);
-
-
-     console.log(content.colaboradores);
 
     content.colaboradores.forEach((element: any) => {
       let rowFields = new Array<string>();
