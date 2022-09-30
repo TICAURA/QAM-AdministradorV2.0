@@ -109,7 +109,7 @@ public class CargaColombiaService {
 			String nombreArchivo = cargaColombia.getArchivo().getOriginalFilename();
 			
 			if (nombreArchivo.endsWith(".xlsx")) {
-				procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
+				responseCargaColombiaDto = procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
 			} else if (nombreArchivo.endsWith(".xls")) {
 				responseCargaColombiaDto = procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
 			} else {
@@ -173,11 +173,9 @@ public class CargaColombiaService {
 	        }	            
 		} catch (IOException e) {			
 			e.printStackTrace();
-		} 
-		cargaMasiva(listaDetCarga, nombreArchivo);
-		ResponseCargaColombiaDto responseCargaColombiaDto = cargaMasiva(listaDetCarga, nombreArchivo);	
+		}  	
 		
-		return responseCargaColombiaDto;
+		return cargaMasiva(listaDetCarga, nombreArchivo);
 	}
 
 	private ResponseCargaColombiaDto procesarXlsx(InputStream inputStream, String nombreArchivo) {
@@ -236,76 +234,77 @@ public class CargaColombiaService {
 	}
 	
 	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
-		
-		AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
-		auxCargaRepository.save(cargarAuxBD);
-		logger.info("/�**** Persistio AuxCarga ****/");
-		for (DetCarga detCarga : listaDetCarga) {
-			logger.info("/�**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
-//			DetCargaId detCargaId = new DetCargaId();
-			
-//			detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
-			detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
-//			detCarga.setDetCargaId(detCargaId);
-			
-			detCargaRepository.save(detCarga);
-			logger.info("/�**** Persistio DetCarga ****/");
-		}
-		
-		try {
-			cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), RFC_CARGA_COLOMBIA);
-			
-			List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
-			
-			Integer exitosos = detCargaRepository.countSituacionExito(cargarAuxBD.getIdCargaMasiva(), SITUACION_CARGA_D, SITUACION_CARGA_N);
-				
-			Integer fallidos = detCargaRepository.countSituacionError(cargarAuxBD.getIdCargaMasiva(), SITUACION_CARGA_E);
-			
-			return generaResponse(detCargaList, exitosos, fallidos);
-		} catch (BusinessException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
+	    
+	    AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
+	    auxCargaRepository.save(cargarAuxBD);
+	    logger.info("/**** Persistio AuxCarga ****/");
+	    for (DetCarga detCarga : listaDetCarga) {
+	      logger.info("/ï¿½**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
+//	      DetCargaId detCargaId = new DetCargaId();
+	      
+//	      detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+	      detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+//	      detCarga.setDetCargaId(detCargaId);
+	      
+	      detCargaRepository.save(detCarga);
+	      logger.info("/**** Persistio DetCarga ****/");
+	    }
+	    
+	    try {
+	      cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), RFC_CARGA_COLOMBIA);
+	      
+	      return generaResponse(cargarAuxBD.getIdCargaMasiva());
+	    } catch (BusinessException e) {
+	      e.printStackTrace();
+	    }
+	    
+	    return null;
+	  }
 
-	private ResponseCargaColombiaDto generaResponse(List<DetCarga> detCargaList, Integer exitosos,
-			Integer fallidos) {
-		
-		ResponseCargaColombiaDto responseCarga = new ResponseCargaColombiaDto();
-		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
-		
-		Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
-		
-		responseCarga.setProcesados(detCargaList.size());
-		responseCarga.setExitosos(exitosos);
-		responseCarga.setFallidos(fallidos);
-		
-		for (DetCarga detCargaItem : detCargaList) {
-			ColaboradorDto colaboradorRes = new ColaboradorDto();
-			ClienteDto clienteRes = new ClienteDto();
-			
-			colaboradorRes.setNombre(detCargaItem.getName());
-			colaboradorRes.setApellidoPat(detCargaItem.getSurname());
-			colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
-			colaboradorRes.setDescError(detCargaItem.getDescError());
-			colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
-			clienteRes.setRazon(clienteColombia.getRazon());
-			colaboradorRes.setClienteDto(clienteRes);
-			
-			colaboradores.add(colaboradorRes);
-			
-			logger.info( "%%%%%" + detCargaItem.getDescError() + "%%%%%");
-		}
-		
-		responseCarga.setColaboradores(colaboradores);
-		
-		logger.info("/**** Procesados :: "+responseCarga.getProcesados());
-		logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
-		logger.info("/**** Fallidos :: "+responseCarga.getFallidos());
-	
-		return responseCarga;
-	}
+	  private ResponseCargaColombiaDto generaResponse(Integer idCargaMasiva) {
+	    
+	    ResponseCargaColombiaDto responseCarga = new ResponseCargaColombiaDto();
+	    List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
+	    
+	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
+	    
+	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
+	    for (DetCarga detCarga : detCargaList) {
+	      logger.info("/**** Des :: "+detCarga.getDescError());
+	    }
+	    
+	    
+	    Integer exitosos = detCargaRepository.countSituacionExito(idCargaMasiva, SITUACION_CARGA_D, SITUACION_CARGA_N);
+	      
+	    Integer fallidos = detCargaRepository.countSituacionError(idCargaMasiva, SITUACION_CARGA_E);
+	    
+	    responseCarga.setProcesados(detCargaList.size());
+	    responseCarga.setExitosos(exitosos);
+	    responseCarga.setFallidos(fallidos);
+	    
+	    for (DetCarga detCargaItem : detCargaList) {
+	      ColaboradorDto colaboradorRes = new ColaboradorDto();
+	      ClienteDto clienteRes = new ClienteDto();
+	      
+	      colaboradorRes.setNombre(detCargaItem.getName());
+	      colaboradorRes.setApellidoPat(detCargaItem.getSurname());
+	      colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
+	      colaboradorRes.setDescError(detCargaItem.getDescError());
+	      colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
+	      clienteRes.setRazon(clienteColombia.getRazon());
+	      colaboradorRes.setClienteDto(clienteRes);
+	      
+	      colaboradores.add(colaboradorRes);
+	    }
+	    
+	    responseCarga.setColaboradores(colaboradores);
+	    
+	    logger.info("/**** Procesados :: "+responseCarga.getProcesados());
+	    logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
+	    logger.info("/**** Fallidos :: "+responseCarga.getFallidos());
+	  
+	    return responseCarga;
+	  }
 
 	private AuxCarga cargarAuxBD(String nombreArchivo) {
 		AuxCarga auxCargaBD = new AuxCarga();

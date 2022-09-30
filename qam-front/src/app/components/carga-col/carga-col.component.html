@@ -1,7 +1,7 @@
 <h1>Carga colaborador Colombia</h1><br>
 
-<ng-container *ngIf="cargando" class="loading">
-    <div align="center">
+<ng-container *ngIf="cargando">
+    <div align="center" class="load">
         <img src="../../../assets/loading.gif">
     </div>
 </ng-container>
@@ -40,9 +40,9 @@
 
 <table class="table table-bordered table-hover table-dark table-striped">
     <thead>
-        <tr>
+        <tr align="center">
             <ng-container *ngFor="let header of tableHeaders">
-                <th>{{header}}</th>
+                <th align="center">{{header}}</th>
             </ng-container>
         </tr>
     </thead>
