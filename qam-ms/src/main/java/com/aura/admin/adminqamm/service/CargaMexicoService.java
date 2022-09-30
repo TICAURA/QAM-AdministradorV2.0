@@ -269,7 +269,7 @@ public class CargaMexicoService {
 			} catch (Exception e) {
 				logger.error(" Error generico :: ");
 				StringBuilder errorStr = new StringBuilder();
-				errorStr.append("Se presentó un error inesperado. Por favor valide los datos ")
+				errorStr.append("Se presento un error inesperado. Por favor valide los datos ")
 					.append(cargaMasivaDTO.getFila().intValue()+1)
 					.append(", columna ").append(numColumna+1);
 				cargaMasivaDTO.getErrores().add(errorStr.toString());
@@ -284,7 +284,7 @@ public class CargaMexicoService {
 	
 	private String mensajeGenerico(int fila, int columna) {
 		StringBuilder errorStr = new StringBuilder();
-		errorStr.append("Se presentó un error inesperado. Por favor valide los datos de la fila ")
+		errorStr.append("Se presento un error inesperado. Por favor valide los datos de la fila ")
 			.append(fila+1)
 			.append(", columna ").append(columna+1);
 		

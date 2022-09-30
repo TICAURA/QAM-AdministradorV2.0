@@ -103,8 +103,8 @@ public class ColaboradorService {
                 }
             } catch (BusinessException e) {
                 itemArchivo.setProcesar(Boolean.FALSE);
-                itemArchivo.getErrores().add("ERROR No se logró cargar colaborador :: " + e.getMessage());
-                logger.error("ERROR No se logró cargar colaborador ****/" + e.getMessage());
+                itemArchivo.getErrores().add("ERROR No se logro cargar colaborador :: " + e.getMessage());
+                logger.error("ERROR No se logro cargar colaborador ****/" + e.getMessage());
             }
 
             logger.info("/**** Finaliza carga colaborador  ****/");
