@@ -35,7 +35,6 @@ import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.model.AuxCarga;
 import com.aura.admin.adminqamm.model.Cliente;
 import com.aura.admin.adminqamm.model.DetCarga;
-import com.aura.admin.adminqamm.model.DetCargaId;
 import com.aura.admin.adminqamm.repository.AuxCargaRepository;
 import com.aura.admin.adminqamm.repository.ClientRepository;
 import com.aura.admin.adminqamm.repository.DetCargaRepository;
@@ -239,7 +238,7 @@ public class CargaColombiaService {
 	    auxCargaRepository.save(cargarAuxBD);
 	    logger.info("/**** Persistio AuxCarga ****/");
 	    for (DetCarga detCarga : listaDetCarga) {
-	      logger.info("/ï¿½**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
+	      logger.info("/**** Carga masiva item :: "+detCarga.getName()+" :: "+cargarAuxBD.getIdCargaMasiva());
 //	      DetCargaId detCargaId = new DetCargaId();
 	      
 //	      detCargaId.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
@@ -262,38 +261,31 @@ public class CargaColombiaService {
 	    
 	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
 	    
-//	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
-//	    for (DetCarga detCarga : detCargaList) {
-//	      logger.info("/**** Des :: "+detCarga.getDescError());
-//	    }
-	    
-	    
 	    Integer exitosos = detCargaRepository.countSituacionExito(idCargaMasiva, SITUACION_CARGA_D, SITUACION_CARGA_N);
 	      
 	    Integer fallidos = detCargaRepository.countSituacionError(idCargaMasiva, SITUACION_CARGA_E);
 	    
 	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
-	    for (DetCarga detCarga : detCargaList) {
-	      logger.info("/**** Des :: "+detCarga.getDescError());
-	    }
-	    
+	   
 	    responseCarga.setProcesados(detCargaList.size());
 	    responseCarga.setExitosos(exitosos);
 	    responseCarga.setFallidos(fallidos);
 	    
 	    for (DetCarga detCargaItem : detCargaList) {
-	      ColaboradorDto colaboradorRes = new ColaboradorDto();
-	      ClienteDto clienteRes = new ClienteDto();
+	    	ColaboradorDto colaboradorRes = new ColaboradorDto();
+	    	ClienteDto clienteRes = new ClienteDto();
 	      
-	      colaboradorRes.setNombre(detCargaItem.getName());
-	      colaboradorRes.setApellidoPat(detCargaItem.getSurname());
-	      colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
-	      colaboradorRes.setDescError(detCargaItem.getDescError());
-	      colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
-	      clienteRes.setRazon(clienteColombia.getRazon());
-	      colaboradorRes.setClienteDto(clienteRes);
+	    	colaboradorRes.setNombre(detCargaItem.getName());
+	    	colaboradorRes.setApellidoPat(detCargaItem.getSurname());
+	    	colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
+	    	colaboradorRes.setDescError(detCargaItem.getDescError());
+	    	logger.info("/**** Descripcion :: "+detCargaItem.getDescError());
+	    	
+	    	colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
+	    	clienteRes.setRazon(clienteColombia.getRazon());
+	    	colaboradorRes.setClienteDto(clienteRes);
 	      
-	      colaboradores.add(colaboradorRes);
+	    	colaboradores.add(colaboradorRes);
 	    }
 	    
 	    responseCarga.setColaboradores(colaboradores);
@@ -311,7 +303,7 @@ public class CargaColombiaService {
 		auxCargaBD.setFechaAlta(new Date());
 		auxCargaBD.setNombreArchivo(nombreArchivo);	
 		
-		logger.info("/�**** Cargo datos auxiliar ****/");
+		logger.info("/**** Cargo datos auxiliar ****/");
 		return auxCargaBD;
 	}
 
