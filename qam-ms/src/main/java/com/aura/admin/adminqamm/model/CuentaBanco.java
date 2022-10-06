@@ -16,8 +16,9 @@ public class CuentaBanco {
     @Column(name="clabe")
     private String clabe;
 
-    @Column(name="pers_id")
-    private int pers_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="pers_id", nullable=false)
+	private Persona persona;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="bank_id", nullable=false)

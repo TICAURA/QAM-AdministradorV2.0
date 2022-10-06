@@ -2,7 +2,9 @@ package com.aura.admin.adminqamm.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public @Data
 class ColaboradorDto {
@@ -16,7 +18,6 @@ class ColaboradorDto {
     private String rfc;
 
     private String nombre;
-
 
     private String apellidoPat;
 
@@ -34,18 +35,17 @@ class ColaboradorDto {
 
     private boolean activo;
 
-
-
-
     private Date fechaIngreso;
 
     private Integer clienteId;
 
     private Long claveColaborador;
 
-
-
     //colaborador
+    private Date fchPago;
+    
+    private Date FchCorteIncidencias;
+    
     private String periodicidad;
 
     private Date fchFin;
@@ -57,7 +57,19 @@ class ColaboradorDto {
     private Double salarioDiarioIntegrado;
 
     private Double distribucionImssComplemento;
-
+    
+    private String numeroDocumento;
+    
+    private String descError;
+    
+    //Relacion
+    private PersonaDto personaDto;
+    
+    private CuentaBancoDto cuentaBancoDto;
+    
+    private ClienteDto clienteDto;
+    
+    private List<DatosContactoDto> datosContactoDto = new ArrayList<DatosContactoDto>();
 
 
 }

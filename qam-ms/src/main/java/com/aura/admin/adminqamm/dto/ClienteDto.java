@@ -23,5 +23,6 @@ public @Data class ClienteDto {
     private String interfazName;
     private String registroPatronal;
     private String subRazonSocial;
+    private String subRfc;
 
 }

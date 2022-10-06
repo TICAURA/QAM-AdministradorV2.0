@@ -16,4 +16,12 @@ public interface ClientRepository extends JpaRepository<Cliente,Integer> {
 	List<Cliente> getCentroCostoAll();
 
 	List<Cliente> findByEsSubcontractorOrderByRazonAsc(Boolean esSubcontrato);
+	
+	@Query("SELECT c FROM Cliente c WHERE c.rfc = ?1 AND c.registroPatronal = ?2 AND (c.subRFC IS NULL OR c.subRFC='')")
+	Cliente getByRfcAndRegistroPatronal(String rfc, String registroPatronal);
+	
+	Cliente findByRfcAndRegistroPatronalAndSubRFC(String rfc, String registroPatronal, String subRFC);
+	
+	@Query("SELECT c FROM Cliente c WHERE c.subRFC = ?1")
+	Cliente getByRfc(String rfc);
 }
