@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,5 +21,7 @@ public interface DetCargaRepository extends JpaRepository<DetCarga,Integer>{
 
 	@Query("SELECT dc FROM DetCarga dc WHERE dc.idCargaMasiva = ?1")
 	List<DetCarga> getByIdCargaMasiva(Integer idCargaMasiva);
-
+	
+	@Query(value = "select F_INSERTA_AGUILA( ?1, ?2)", nativeQuery = true)
+	String callFuntionAguila(Integer idCargaMasiva, String rfcCliente);
 }

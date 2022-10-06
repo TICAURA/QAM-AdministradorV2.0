@@ -250,15 +250,9 @@ public class CargaColombiaService {
 	      logger.info("/**** Persistio DetCarga ****/");
 	    }
 	    
-	    try {
-	      cargaColombiaDao.insertaAguilaFuncion(cargarAuxBD.getIdCargaMasiva(), RFC_CARGA_COLOMBIA);
-	      
-	      return generaResponse(cargarAuxBD.getIdCargaMasiva());
-	    } catch (BusinessException e) {
-	      e.printStackTrace();
-	    }
+	    detCargaRepository.callFuntionAguila(cargarAuxBD.getIdCargaMasiva(),RFC_CARGA_COLOMBIA);
 	    
-	    return null;
+	    return generaResponse(cargarAuxBD.getIdCargaMasiva());
 	  }
 
 	  private ResponseCargaColombiaDto generaResponse(Integer idCargaMasiva) {
@@ -268,15 +262,20 @@ public class CargaColombiaService {
 	    
 	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
 	    
-	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
-	    for (DetCarga detCarga : detCargaList) {
-	      logger.info("/**** Des :: "+detCarga.getDescError());
-	    }
+//	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
+//	    for (DetCarga detCarga : detCargaList) {
+//	      logger.info("/**** Des :: "+detCarga.getDescError());
+//	    }
 	    
 	    
 	    Integer exitosos = detCargaRepository.countSituacionExito(idCargaMasiva, SITUACION_CARGA_D, SITUACION_CARGA_N);
 	      
 	    Integer fallidos = detCargaRepository.countSituacionError(idCargaMasiva, SITUACION_CARGA_E);
+	    
+	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
+	    for (DetCarga detCarga : detCargaList) {
+	      logger.info("/**** Des :: "+detCarga.getDescError());
+	    }
 	    
 	    responseCarga.setProcesados(detCargaList.size());
 	    responseCarga.setExitosos(exitosos);
