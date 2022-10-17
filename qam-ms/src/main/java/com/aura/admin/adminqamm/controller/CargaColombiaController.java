@@ -1,6 +1,7 @@
 package com.aura.admin.adminqamm.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aura.admin.adminqamm.dto.ColaboradorDto;
 import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
@@ -39,6 +41,14 @@ public class CargaColombiaController {
     public ResponseEntity<Object> insertCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
         try {
         	ResponseCargaColombiaDto responseCargaColombiaDto = cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
+        	
+        	List<ColaboradorDto> procesados = cargaColombiaService.obetenerResgistrosProcesados(responseCargaColombiaDto.getIdCargaMasiva());
+        	
+        	responseCargaColombiaDto.setColaboradores(procesados);
+        	responseCargaColombiaDto.setProcesados(procesados.size());
+        	
+        	logger.info("/**** Procesados :: "+responseCargaColombiaDto.getProcesados());
+       
             return new ResponseEntity<Object>(responseCargaColombiaDto, HttpStatus.OK);
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));

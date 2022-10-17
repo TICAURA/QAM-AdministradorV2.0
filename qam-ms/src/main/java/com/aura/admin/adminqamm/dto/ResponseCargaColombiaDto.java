@@ -26,5 +26,7 @@ public class ResponseCargaColombiaDto implements Serializable{/**
 	private Integer exitosos;
 	
 	private Integer fallidos;
+	
+	private Integer idCargaMasiva;
 
 }

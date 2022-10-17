@@ -56,7 +56,7 @@ public class CargaColombiaService {
 	@Autowired
 	private ClientRepository clienteRepository;
 	
-	private static final String RFC_CARGA_COLOMBIA = "AAA010101AA2";
+	private static final String RFC_CARGA_COLOMBIA = "AAA010101AA1";
 	
 	private static final String SITUACION_CARGA_D = "D";
 	
@@ -120,6 +120,32 @@ public class CargaColombiaService {
 		
 		logger.info("/**** Informacion cargada correctamente  ****/");
 		return responseCargaColombiaDto;
+	}
+
+	public List<ColaboradorDto> obetenerResgistrosProcesados(Integer idCargaMasiva) {
+		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
+	    
+	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
+	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
+	    
+	    for (DetCarga detCargaItem : detCargaList) {
+		    	ColaboradorDto colaboradorRes = new ColaboradorDto();
+		    	ClienteDto clienteRes = new ClienteDto();
+		      
+		    	colaboradorRes.setNombre(detCargaItem.getName());
+		    	colaboradorRes.setApellidoPat(detCargaItem.getSurname());
+		    	colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
+		    	colaboradorRes.setDescError(detCargaItem.getDescError());
+		    	logger.info("/**** Descripcion :: "+detCargaItem.getDescError());
+		    	
+		    	colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
+		    	clienteRes.setRazon(clienteColombia.getRazon());
+		    	colaboradorRes.setClienteDto(clienteRes);
+		      
+		    	colaboradores.add(colaboradorRes);
+		}
+		   
+		return colaboradores;
 	}
 	
 	private ResponseCargaColombiaDto procesarXls(InputStream inputStream, String nombreArchivo) {
@@ -257,40 +283,15 @@ public class CargaColombiaService {
 	  private ResponseCargaColombiaDto generaResponse(Integer idCargaMasiva) {
 	    
 	    ResponseCargaColombiaDto responseCarga = new ResponseCargaColombiaDto();
-	    List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
-	    
-	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
 	    
 	    Integer exitosos = detCargaRepository.countSituacionExito(idCargaMasiva, SITUACION_CARGA_D, SITUACION_CARGA_N);
 	      
 	    Integer fallidos = detCargaRepository.countSituacionError(idCargaMasiva, SITUACION_CARGA_E);
-	    
-	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
 	   
-	    responseCarga.setProcesados(detCargaList.size());
 	    responseCarga.setExitosos(exitosos);
 	    responseCarga.setFallidos(fallidos);
+	    responseCarga.setIdCargaMasiva(idCargaMasiva);
 	    
-	    for (DetCarga detCargaItem : detCargaList) {
-	    	ColaboradorDto colaboradorRes = new ColaboradorDto();
-	    	ClienteDto clienteRes = new ClienteDto();
-	      
-	    	colaboradorRes.setNombre(detCargaItem.getName());
-	    	colaboradorRes.setApellidoPat(detCargaItem.getSurname());
-	    	colaboradorRes.setApellidoMat(detCargaItem.getSurname2());
-	    	colaboradorRes.setDescError(detCargaItem.getDescError());
-	    	logger.info("/**** Descripcion :: "+detCargaItem.getDescError());
-	    	
-	    	colaboradorRes.setNumeroDocumento(detCargaItem.getDocumentNumber());
-	    	clienteRes.setRazon(clienteColombia.getRazon());
-	    	colaboradorRes.setClienteDto(clienteRes);
-	      
-	    	colaboradores.add(colaboradorRes);
-	    }
-	    
-	    responseCarga.setColaboradores(colaboradores);
-	    
-	    logger.info("/**** Procesados :: "+responseCarga.getProcesados());
 	    logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
 	    logger.info("/**** Fallidos :: "+responseCarga.getFallidos());
 	  
