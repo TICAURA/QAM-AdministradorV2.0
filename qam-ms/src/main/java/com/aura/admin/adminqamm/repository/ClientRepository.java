@@ -22,6 +22,6 @@ public interface ClientRepository extends JpaRepository<Cliente,Integer> {
 	
 	Cliente findByRfcAndRegistroPatronalAndSubRFC(String rfc, String registroPatronal, String subRFC);
 	
-	@Query("SELECT c FROM Cliente c WHERE c.subRFC = ?1 AND c.activo=1 AND c.centroCostosId IS NOT NULL")
+	@Query("SELECT c FROM Cliente c WHERE c.rfc = ?1 AND c.activo=1 AND c.centroCostosId IS NOT NULL")
 	Cliente getByRfc(String rfc);
 }

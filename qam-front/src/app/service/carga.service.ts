@@ -24,4 +24,10 @@ export class CargaService {
     
   }
 
+  getAll(rootUrl: Endpoint, getSuccess: any, errorCallback: any, idCarga:number) {
+    const endpoint: string = rootUrl + "/procesados"+ `/${idCarga}`;
+    const method: string = 'GET';
+    this.httpSenderService.makeHttpRequest(endpoint, method, getSuccess, errorCallback, undefined);
+  }
+
 }

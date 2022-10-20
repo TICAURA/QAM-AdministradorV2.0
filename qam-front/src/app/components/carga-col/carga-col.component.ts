@@ -14,12 +14,14 @@ import { cargaCol } from 'src/app/model/cargaCol';
   styleUrls: ['./carga-col.component.css']
 })
 export class CargaColComponent implements OnInit {
+  
 
-  constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
+  constructor(private cargaService : CargaService, private rest:HttpSenderService){
     
   }
 
   ngOnInit(): void {
+
     this.files = new Carga();
     this.files.idCarga = 0;
     this.cargando = false;
@@ -52,13 +54,11 @@ export class CargaColComponent implements OnInit {
   
   onSearch(){
 
-      try{
+    try{
         this.downloadFile();
-     }
-     catch{
-       alert (this.error)
-     }
-      
+    }
+    catch{alert (this.error)}
+
   }
   
   downloadFile(): void {
@@ -66,13 +66,11 @@ export class CargaColComponent implements OnInit {
     const date = new Date()
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
     this.tittle = ("Layout_cargaCO"+dateStr);
-  
-      this.rest
-        .download(Endpoint.CARGACOL)
-        .subscribe(blob => FileSaver.saveAs(blob, this.tittle+".xls")  );
-      alert("Archivo descargado");
+    this.rest.download(Endpoint.CARGACOL).subscribe(blob => FileSaver.saveAs(blob, this.tittle+".xls")  )
+    if ( this.rest.header2.Authorization==null ||  this.rest.header2.Authorization ==""){
+      alert("No tiene los permisos para ejetucar operaciones en esta información.");
+    }
   }
-  
   
   onUpload(){
 
@@ -91,9 +89,8 @@ export class CargaColComponent implements OnInit {
     this.mostrarTabla = false;
     this.cargando = true;
 
-
-  
   }
+
   onFileChange(event: any){
         
       this.files.archivo = event.target.files[0]
@@ -101,19 +98,25 @@ export class CargaColComponent implements OnInit {
 
   }   
   
-  
   private saveSuccess=(content: any):void=>{
 
-          alert("Elemento guardado con éxito.");
-          this.buildTable(content)
-          this.correcto = content.exitosos;
-          this.error = content.fallidos;    
-          this.procesados = content.procesados;
-          this.mostrarTabla = true;
-          this.cargando = false;
+    this.cargaService.getAll(this.typeEndpoint,this.getSuccess,this.callFailureShowMessage,content.idCargaMasiva);
+    this.buildTable(content)
+    this.correcto = content.exitosos;
+    this.error = content.fallidos;    
+    this.procesados = content.procesados;
+
   }
 
-  
+  private getSuccess=(content:any):void=>{
+
+    
+    this.buildTable(content)
+    this.mostrarTabla = true;
+    this.cargando = false;
+    alert("Elemento guardado con éxito.");
+
+  }  
   
 
   private buildTable (content:any): void {
@@ -143,8 +146,6 @@ export class CargaColComponent implements OnInit {
     this.tableHeaders.push("Razón Social");
     this.tableHeaders.push("Observaciones");
 
-
-    
 
   }
 
