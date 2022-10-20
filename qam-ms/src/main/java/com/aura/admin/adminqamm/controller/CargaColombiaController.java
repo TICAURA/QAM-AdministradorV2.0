@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,12 +54,12 @@ public class CargaColombiaController {
         }
     }
 	
-	@GetMapping("/procesados")
-    public ResponseEntity<Object> procesadosCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
+	@GetMapping("/procesados/{idCargaMasiva}")
+    public ResponseEntity<Object> procesadosCargaColombia(@RequestAttribute("username") int loggedIdUser, @PathVariable("idCargaMasiva") int idCargaMasiva){
         try {
         	ResponseCargaColombiaDto responseCargaColombiaDto = new ResponseCargaColombiaDto();
         	
-        	List<ColaboradorDto> procesados = cargaColombiaService.obetenerResgistrosProcesados(cargaColombia.getIdCarga());
+        	List<ColaboradorDto> procesados = cargaColombiaService.obetenerResgistrosProcesados(idCargaMasiva);
         	
         	responseCargaColombiaDto.setColaboradores(procesados);
        
