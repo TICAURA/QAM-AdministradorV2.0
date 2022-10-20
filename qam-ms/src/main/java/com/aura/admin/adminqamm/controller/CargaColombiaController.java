@@ -42,12 +42,25 @@ public class CargaColombiaController {
         try {
         	ResponseCargaColombiaDto responseCargaColombiaDto = cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
         	
-        	List<ColaboradorDto> procesados = cargaColombiaService.obetenerResgistrosProcesados(responseCargaColombiaDto.getIdCargaMasiva());
+        	logger.info("/**** Procesados :: "+responseCargaColombiaDto.getProcesados());
+       
+            return new ResponseEntity<Object>(responseCargaColombiaDto, HttpStatus.OK);
+        }catch (BusinessException e){
+            return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
+        }catch (Exception e){
+            logger.error("error al realizar la carga colombia :"+e.getMessage(),e);
+            return new ResponseEntity<Object>("{\"error\":\"Servicio no disponible para carga.\"}",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+	
+	@GetMapping("/procesados")
+    public ResponseEntity<Object> procesadosCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
+        try {
+        	ResponseCargaColombiaDto responseCargaColombiaDto = new ResponseCargaColombiaDto();
+        	
+        	List<ColaboradorDto> procesados = cargaColombiaService.obetenerResgistrosProcesados(cargaColombia.getIdCarga());
         	
         	responseCargaColombiaDto.setColaboradores(procesados);
-        	responseCargaColombiaDto.setProcesados(procesados.size());
-        	
-        	logger.info("/**** Procesados :: "+responseCargaColombiaDto.getProcesados());
        
             return new ResponseEntity<Object>(responseCargaColombiaDto, HttpStatus.OK);
         }catch (BusinessException e){

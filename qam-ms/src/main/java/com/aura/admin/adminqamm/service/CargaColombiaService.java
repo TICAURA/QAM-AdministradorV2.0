@@ -122,9 +122,13 @@ public class CargaColombiaService {
 		return responseCargaColombiaDto;
 	}
 
-	public List<ColaboradorDto> obetenerResgistrosProcesados(Integer idCargaMasiva) {
+	public List<ColaboradorDto> obetenerResgistrosProcesados(Integer idCargaMasiva) throws BusinessException {
 		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
 	    
+		if(idCargaMasiva==null) {
+			throw new BusinessException("El id de la carga es requerido", 401);
+		}
+		
 	    Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
 	    List<DetCarga> detCargaList = detCargaRepository.getByIdCargaMasiva(idCargaMasiva);
 	    
@@ -290,6 +294,7 @@ public class CargaColombiaService {
 	   
 	    responseCarga.setExitosos(exitosos);
 	    responseCarga.setFallidos(fallidos);
+	    responseCarga.setProcesados(exitosos+fallidos);
 	    responseCarga.setIdCargaMasiva(idCargaMasiva);
 	    
 	    logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
