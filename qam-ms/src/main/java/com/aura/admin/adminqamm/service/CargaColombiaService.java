@@ -1,14 +1,20 @@
 package com.aura.admin.adminqamm.service;
 
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -100,6 +106,18 @@ public class CargaColombiaService {
 			logger.info("/**** Procesa archivo carga masiva colombia  ****/" + cargaColombia.getArchivo().getOriginalFilename());
 		}
 		
+		String hashName = null;
+		try {
+			hashName = getBytesOfMd5(cargaColombia.getArchivo().getInputStream());
+		}catch (IOException | NoSuchAlgorithmException e) {
+			logger.error("ERROR hashear archivo ",e.getMessage());
+		}
+		
+		if (auxCargaRepository.findFileByHash(hashName)!= null) {
+			logger.info("/**El archivo: "+cargaColombia.getArchivo().getOriginalFilename()+" ya existe.**/");
+			throw new BusinessException("El archivo ya existe", 406);
+			
+		}
 		try {
 			if (cargaColombia.getArchivo().getInputStream()==null) {
 				throw new BusinessException("Archivo vacio", 401);
@@ -108,9 +126,9 @@ public class CargaColombiaService {
 			String nombreArchivo = cargaColombia.getArchivo().getOriginalFilename();
 			
 			if (nombreArchivo.endsWith(".xlsx")) {
-				responseCargaColombiaDto = procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
+				responseCargaColombiaDto = procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
 			} else if (nombreArchivo.endsWith(".xls")) {
-				responseCargaColombiaDto = procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo);
+				responseCargaColombiaDto = procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
 			} else {
 				throw new BusinessException("Error formato incorrecto.", 401);
 			}
@@ -152,7 +170,7 @@ public class CargaColombiaService {
 		return colaboradores;
 	}
 	
-	private ResponseCargaColombiaDto procesarXls(InputStream inputStream, String nombreArchivo) {
+	private ResponseCargaColombiaDto procesarXls(InputStream inputStream, String nombreArchivo, String hashName) {
 		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
 		
 		List<DetCarga> listaDetCarga = new ArrayList<DetCarga>();
@@ -204,10 +222,10 @@ public class CargaColombiaService {
 			e.printStackTrace();
 		}  	
 		
-		return cargaMasiva(listaDetCarga, nombreArchivo);
+		return cargaMasiva(listaDetCarga, nombreArchivo, hashName);
 	}
 
-	private ResponseCargaColombiaDto procesarXlsx(InputStream inputStream, String nombreArchivo) {
+	private ResponseCargaColombiaDto procesarXlsx(InputStream inputStream, String nombreArchivo, String hashName) {
 		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
 		
 		List<DetCarga> listaDetCarga = new ArrayList<DetCarga>();
@@ -259,12 +277,12 @@ public class CargaColombiaService {
 			e.printStackTrace();
 		} 
 		
-		return cargaMasiva(listaDetCarga, nombreArchivo);	
+		return cargaMasiva(listaDetCarga, nombreArchivo, hashName);	
 	}
 	
-	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo) {
+	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo, String hashName ) {
 	    
-	    AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo);
+	    AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo, hashName);
 	    auxCargaRepository.save(cargarAuxBD);
 	    logger.info("/**** Persistio AuxCarga ****/");
 	    for (DetCarga detCarga : listaDetCarga) {
@@ -303,14 +321,16 @@ public class CargaColombiaService {
 	    return responseCarga;
 	  }
 
-	private AuxCarga cargarAuxBD(String nombreArchivo) {
+	private AuxCarga cargarAuxBD(String nombreArchivo, String hashName) {
 		AuxCarga auxCargaBD = new AuxCarga();
 		
 		auxCargaBD.setFechaAlta(new Date());
-		auxCargaBD.setNombreArchivo(nombreArchivo);	
-		
+		auxCargaBD.setNombreArchivo(nombreArchivo);
+		auxCargaBD.setHash(hashName);
+			
 		logger.info("/**** Cargo datos auxiliar ****/");
 		return auxCargaBD;
+			
 	}
 
 	private void caseFila (int numColumna, DetCarga detCargaFila, String contenidoCelda, CargaMasivaDto cargaMasivaDTO) {
@@ -360,4 +380,28 @@ public class CargaColombiaService {
 				cargaMasivaDTO.getErrores().add(errorStr.toString());
 			}	
 		}
+
+	public static String getBytesOfMd5(InputStream is) throws IOException, NoSuchAlgorithmException {
+		
+
+        byte[] buffer = new byte[1024];
+        MessageDigest complete = MessageDigest.getInstance("MD5");
+        int numRead;
+        do {
+            numRead = is.read(buffer);
+            if (numRead > 0) {
+                complete.update(buffer, 0, numRead);
+            }
+        } while (numRead != -1);
+
+        is.close();
+        byte[] hashbyte = complete.digest();
+		StringBuilder sb = new StringBuilder();
+		for (byte b : hashbyte)
+		  sb.append(String.format("%02x", b & 0xFF));
+		String hexHash = sb.toString();
+        return hexHash;
+            
+	    
+	}
 }

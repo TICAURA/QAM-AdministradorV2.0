@@ -22,4 +22,7 @@ public class AuxCarga {
 
     @Column(name="fecha_alta")
     private Date fechaAlta;
+    
+    @Column(name="hash")
+    private String hash;
 }
