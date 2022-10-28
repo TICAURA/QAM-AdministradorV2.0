@@ -106,18 +106,6 @@ public class CargaColombiaService {
 			logger.info("/**** Procesa archivo carga masiva colombia  ****/" + cargaColombia.getArchivo().getOriginalFilename());
 		}
 		
-		String hashName = null;
-		try {
-			hashName = getBytesOfMd5(cargaColombia.getArchivo().getInputStream());
-		}catch (IOException | NoSuchAlgorithmException e) {
-			logger.error("ERROR hashear archivo ",e.getMessage());
-		}
-		
-		if (auxCargaRepository.findFileByHash(hashName)!= null) {
-			logger.info("/**El archivo: "+cargaColombia.getArchivo().getOriginalFilename()+" ya existe.**/");
-			throw new BusinessException("El archivo ya existe", 406);
-			
-		}
 		try {
 			if (cargaColombia.getArchivo().getInputStream()==null) {
 				throw new BusinessException("Archivo vacio", 401);
@@ -125,14 +113,22 @@ public class CargaColombiaService {
 		
 			String nombreArchivo = cargaColombia.getArchivo().getOriginalFilename();
 			
+			String hashName = getBytesOfMd5(cargaColombia.getArchivo().getInputStream());
+			
+			if (auxCargaRepository.findFileByHash(hashName)!= null) {
+				logger.info("/**El archivo: "+cargaColombia.getArchivo().getOriginalFilename()+" ya existe.**/");
+				throw new BusinessException("El archivo ya se ha procesado previamente :: ", 406);
+				
+			}
+			
 			if (nombreArchivo.endsWith(".xlsx")) {
 				responseCargaColombiaDto = procesarXlsx(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
 			} else if (nombreArchivo.endsWith(".xls")) {
 				responseCargaColombiaDto = procesarXls(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
 			} else {
-				throw new BusinessException("Error formato incorrecto.", 401);
+				throw new BusinessException("Error formato incorrecto.", 406);
 			}
-		} catch (IOException e) {
+		} catch (IOException | NoSuchAlgorithmException e) {
 			logger.error("ERROR al leer el archivo para la carga masiva colombia :: ",e.getMessage());
 		}
 		
