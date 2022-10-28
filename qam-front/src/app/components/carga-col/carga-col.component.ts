@@ -44,7 +44,7 @@ export class CargaColComponent implements OnInit {
   tittle:string;
 
   private callFailureShowMessage = (content:any,error:Errors) :void =>{
-    alert(error);
+    alert(content);
     console.log(content);
     this.mostrarTabla = true;
     this.cargando = false;
