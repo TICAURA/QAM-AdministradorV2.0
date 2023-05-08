@@ -86,7 +86,7 @@ public class NominaDao {
                return NOM035RegistroDto.build(resultSet);
             } else{
                LOGGER.error("Error obteniendo reporte del cuestionarios ");
-               throw new BusinessException("Error obteniendo reporte del cuestionarios. ",500);
+               throw new BusinessException("Error obteniendo reporte del cuestionarios. ",404);
            }
 
         }catch(SQLException e) {
