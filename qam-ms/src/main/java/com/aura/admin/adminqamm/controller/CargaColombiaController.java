@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.admin.adminqamm.dto.ColaboradorDto;
 import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
+import com.aura.admin.adminqamm.dto.ResponseCargaNequiDto;
+import com.aura.admin.adminqamm.dto.UsuarioDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
+import com.aura.admin.adminqamm.model.DetCarga;
 import com.aura.admin.adminqamm.service.CargaColombiaService;
 
 @RestController
@@ -38,14 +41,34 @@ public class CargaColombiaController {
 	
 	Logger logger = LoggerFactory.getLogger(CargaColombiaController.class);
 	
-	@PostMapping("")
+	@PostMapping("/cargaColaborador")
     public ResponseEntity<Object> insertCargaColombia(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
-        try {
+		
+		try {
         	ResponseCargaColombiaDto responseCargaColombiaDto = cargaColombiaService.insertCargaColombia(loggedIdUser, cargaColombia);
         	
         	logger.info("/**** Procesados :: "+responseCargaColombiaDto.getProcesados());
        
             return new ResponseEntity<Object>(responseCargaColombiaDto, HttpStatus.OK);
+        }catch (BusinessException e){
+            return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
+        }catch (Exception e){
+            logger.error("error al realizar la carga colombia :"+e.getMessage(),e);
+            return new ResponseEntity<Object>("{\"error\":\"Servicio no disponible para carga.\"}",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+	
+	@PostMapping("/cargaNequi")
+    public ResponseEntity<Object> insertCargaNequi(@RequestAttribute("username") int loggedIdUser, @ModelAttribute CargaRequestDto cargaColombia){
+        	
+		logger.info("/**** Entrando a insertaNequi *****/ ");
+		
+		try {
+			ResponseCargaNequiDto responseCargaNequiDto = cargaColombiaService.insertCargaNequi(loggedIdUser, cargaColombia);
+        	
+        	logger.info("/**** Procesados :: "+responseCargaNequiDto.getProcesados());
+       
+            return new ResponseEntity<Object>(responseCargaNequiDto, HttpStatus.OK);
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
         }catch (Exception e){
@@ -67,42 +90,40 @@ public class CargaColombiaController {
         }catch (BusinessException e){
             return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
         }catch (Exception e){
-            logger.error("error al realizar la carga colombia :"+e.getMessage(),e);
+            logger.error("error al obtener la carga colombia :"+e.getMessage(),e);
             return new ResponseEntity<Object>("{\"error\":\"Servicio no disponible para carga.\"}",HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 	
-	@GetMapping(value= "",produces = "application/vnd.ms-excel")
-    public ResponseEntity  descargaLayout(@RequestAttribute("username") int loggedIdUser, HttpServletResponse response){
-	
-		try {
-			HSSFWorkbook wb = cargaColombiaService.obtenerWorkBook(loggedIdUser);
-
-	        writeToOutputStream(response,wb);
-
-	        response.setHeader("Content-Disposition","attachment; filename=\"Layout.xlsx\"");
-			
-            return ResponseEntity.ok().build();
-            
-        } catch (Exception e){
-            logger.error("error al descargar layout:"+e.getMessage(),e);
-            return ResponseEntity.badRequest().build();
+	@GetMapping("/procesados-nequi/{idCargaMasiva}")
+    public ResponseEntity<Object> procesadosCargaNequi(@RequestAttribute("username") int loggedIdUser, @PathVariable("idCargaMasiva") int idCargaMasiva){
+        try {
+        	ResponseCargaNequiDto responseCargaNequiDto = new ResponseCargaNequiDto();
+        	
+        	List<UsuarioDto> procesados = cargaColombiaService.obetenerResgistrosNequiProcesados(idCargaMasiva);
+        	
+        	responseCargaNequiDto.setUsuarioDto(procesados);
+       
+            return new ResponseEntity<Object>(responseCargaNequiDto, HttpStatus.OK);
+        }catch (BusinessException e){
+            return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
+        }catch (Exception e){
+            logger.error("error al obtener la carga colombia :"+e.getMessage(),e);
+            return new ResponseEntity<Object>("{\"error\":\"Servicio no disponible para carga.\"}",HttpStatus.INTERNAL_SERVER_ERROR);
         }
-		
+    }
 	
-	}
-		
-	public void writeToOutputStream(HttpServletResponse response,HSSFWorkbook wb){
-
-	    ServletOutputStream out ;
-	    try {
-	        out = response.getOutputStream();
-	        wb.write(out);
-	        wb.close();
-	        out.close();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-
-	}
+	
+	@GetMapping("")
+    public ResponseEntity<Object> getUsers(@RequestAttribute("username") int loggedIdUser){
+        try {
+            List<DetCarga> usuarios = cargaColombiaService.getUsers(loggedIdUser);
+            return new ResponseEntity<Object>(usuarios, HttpStatus.OK);
+        }catch (BusinessException e){
+            return new ResponseEntity<Object>("{\"error\":\""+e.getError()+"\"}",HttpStatus.valueOf(e.getCode()));
+        }catch (Exception e){
+            logger.error("error al ingresar a carga masiva:"+e.getMessage(),e);
+            return new ResponseEntity<Object>("{\"error\":\"Servicio no disponible.\"}",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { GenericService } from 'src/app/service/generic.service';
+import { Endpoint } from 'src/app/utils/endpoint';
 import { Errors } from 'src/app/utils/errors';
 
 @Component({
@@ -8,19 +11,31 @@ import { Errors } from 'src/app/utils/errors';
 })
 export class CargaMasivaComponent implements OnInit {
 
-  showTable: boolean = true;
   errorMessage: Errors;
-  showFiltro: boolean = true;
   showContenido: boolean = true;
-
+  typeEndpoint: Endpoint = Endpoint.CARGACOL
   
-  constructor() { }
+  constructor(private genericService: GenericService) { }
   ngOnInit(): void {
 
-    //this.genericService.getAll(Endpoint.CARGA, this.getAllSuccess, this.callFailure);
-  }
+    this.genericService.getAll(this.typeEndpoint ,this.getAllSuccess,this.callFailure);
+    
+  }  
 
+  
+  private getAllSuccess = (content: any): void => {
+
+    this.showContenido = true;
+
+  }
+  private callFailure = (content: any, error: Errors): void => { 
+
+    this.showContenido = false; 
+    this.errorMessage = error; 
+
+  }
     
 
     
 }
+

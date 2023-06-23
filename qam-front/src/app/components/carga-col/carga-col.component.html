@@ -1,64 +1,83 @@
-<h1>Carga colaborador Colombia</h1><br>
+<ng-container *ngIf="showContenido">
+    <h1>Carga colaborador Colombia</h1><br>
 
-<ng-container *ngIf="cargando">
-    <div align="center" class="load">
-        <img src="../../../assets/loading.gif">
-    </div>
-</ng-container>
-<ng-container *ngIf="mostrarTabla">
+    <ng-container *ngIf="cargando">
+        <div align="center" class="load">
+            <img src="../../../assets/loading.gif">
+        </div>
+    </ng-container>
+    <ng-container *ngIf="mostrarTabla">
 
-    <TABLE BORDER align="center">
-        <TR ALIGN=CENTER>
-            <TD>
-                <div class="custom-file">
-                    <input type="file" class="form-control" id="input-custom-file" accept=".xls,.xlsx" (change)="onFileChange($event)">
-                    <span id="btnUpload" class="input-group-text upload" (click)="onUpload()">Cargar Archivo</span>            
-                </div>
-                
-            <TD><button id="downloadFile"class="btn  btn-primary" (click)="onSearch()">Descargar Layout</button>
-        </TR>
-    </TABLE>
-    <br>
-    <TABLE BORDER align="center">
-        <TR ALIGN=CENTER>
-            <td WIDTH="500"><label class="form-label" >Se procesaron : </label>
-            <td WIDTH="500"><label class="form-label">Exitoso : </label>
-            <td WIDTH="500"><label class="form-label">Fallido : </label>
+        <table BORDER align="center">
+            <tr ALIGN=CENTER>
+                <td>
+                    <div class="custom-file" style="margin: 10px;">
+                        <input type="file" class="form-control" id="input-custom-file" accept=".xls,.xlsx" (change)="onFileChange($event)">
+                        <span id="btnUpload" class="input-group-text upload" (click)="cargarArchivo()">Cargar Archivo</span>            
+                    </div>
+                </td>
+                <td>
+                        <div class="container-fluid mb-4">
             
-        </TR>
-        <TR ALIGN=CENTER>
-            <td WIDTH="500"> <input type="text" id="procesado" size="auto" disabled = "true" value= {{procesados}}>
-            <td WIDTH="500"> <input type="text" id="successful" size="auto" disabled = "true" value = {{correcto}}>
-            <td WIDTH="500"> <input type="text" id="error" size="auto" disabled = "true" value={{error}}>
-            
-        </TR>
-    </TABLE>
-</ng-container>
-<br>
-<br>
-
-
-<table class="table table-bordered table-hover table-dark table-striped">
-    <thead>
-        <tr align="center">
-            <ng-container *ngFor="let header of tableHeaders">
-                <th align="center">{{header}}</th>
-            </ng-container>
-        </tr>
-    </thead>
-    <tbody>
-        <ng-container *ngFor="let rowData of tableFields">
-            <tr>
-
-                <ng-container *ngFor="let field of rowData; let i= index">
-
-                    <td class="align-middle" align="center">{{field}}</td>
-
-                </ng-container>
-
+                        Seleccione el Layout:
+                        <select class="form-select" name="filtro1" [(ngModel)]="filtro1Seleccion" (change)="seleccionarOpcionLayout()">
+                            <option  [value]="tipo" *ngFor="let tipo of filtro1">{{tipo}}</option>
+                        </select>
+                        <br>
+                        <button *ngIf="esDescarga" id="downloadFile"class="btn  btn-primary" (click)="descargaLayout()">Descargar Layout</button> 
+                        
+                        </div>
+                        
+                </td>
+                <!-- <td> -->
             </tr>
-        </ng-container>
-    </tbody>
-</table> 
+        </table>
+        <br>
+        <table BORDER align="center">
+            <TR ALIGN=CENTER>
+                <td WIDTH="500"><label class="form-label" >Se procesaron : </label>
+                <td WIDTH="500"><label class="form-label">Exitoso : </label>
+                <td WIDTH="500"><label class="form-label">Fallido : </label>
+                
+            </TR>
+            <TR ALIGN=CENTER>
+                <td WIDTH="500"> <input type="text" id="procesado" size="auto" disabled = "true" value= {{procesados}}>
+                <td WIDTH="500"> <input type="text" id="successful" size="auto" disabled = "true" value = {{correcto}}>
+                <td WIDTH="500"> <input type="text" id="error" size="auto" disabled = "true" value={{error}}>
+                
+            </TR>
+        </table>
+    </ng-container>
+    <br>
+    <br>
 
+
+    <table class="table table-bordered table-hover table-dark table-striped">
+        <thead>
+            <tr align="center">
+                <ng-container *ngFor="let header of tableHeaders">
+                    <th align="center">{{header}}</th>
+                </ng-container>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let rowData of tableFields">
+                <tr>
+
+                    <ng-container *ngFor="let field of rowData; let i= index">
+
+                        <td class="align-middle" align="center">{{field}}</td>
+
+                    </ng-container>
+
+                </tr>
+            </ng-container>
+        </tbody>
+    </table> 
+</ng-container>
+<ng-container  *ngIf="!showContenido">
+	<div class="container p-5 my-3 bg-dark text-white">
+        <p class="text-center font-weight-bold">{{errorMessage}}</p>
+    </div>
+</ng-container> 
 

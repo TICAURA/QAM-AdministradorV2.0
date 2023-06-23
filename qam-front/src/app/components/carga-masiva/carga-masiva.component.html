@@ -1,14 +1,21 @@
-<div class="container-fluid mb-4">
+<ng-container *ngIf="showContenido">
+	<div class="paises" >
 
-		<TABLE BORDER align="center">
-			<TR>
-				<TD COLSPAN=2><h1>Carga de Colaboradores</h1></TD>
-			</TR>
-			<TR ALIGN=CENTER>
-				
-					<TD><a class="nav-link" [routerLink]="['../carga-mex']"><img src="./assets/icon_mex.png" height="90px" width="150px" title="México" ></a></TD>
-					<TD><a class="nav-link" [routerLink]="['../carga-col']"><img src="./assets/icon_col.png" height="90px" width="150px" title="Colombia" ></a></TD>
-				
-			</TR>
-		</TABLE>
-</div>
+			<table style="padding: center;">
+				<tr>
+					<td COLSPAN=2><h1>Carga de Colaboradores</h1></td>
+				</tr>
+				<tr>
+					
+						<td><a class="nav-link" [routerLink]="['../carga-mex']"><img src="./assets/icon_mex.png" height="90px" width="150px" title="México" ></a></td>
+						<td><a class="nav-link" [routerLink]="['../carga-col']"><img src="./assets/icon_col.png" height="90px" width="150px" title="Colombia" ></a></td>
+					
+				</tr>
+			</table>
+	</div>
+</ng-container>
+<ng-container  *ngIf="!showContenido">
+	<div class="container p-5 my-3 bg-dark text-white">
+        <p class="text-center font-weight-bold">{{errorMessage}}</p>
+    </div>
+</ng-container>
