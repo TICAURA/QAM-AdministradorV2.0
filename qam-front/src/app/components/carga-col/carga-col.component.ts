@@ -268,7 +268,7 @@ export class CargaColComponent implements OnInit {
       rowFields.push(model.segundoApellido+"");
       rowFields.push(model.tipoDocumentoId+"");
       rowFields.push(model.celular+"");
-      rowFields.push(model.cuentaNequi+"");
+      //rowFields.push(model.cuentaNequi+"");
       rowFields.push(model.numeroDocumentoId+"");
       rowFields.push(model.observacioCarga+"");
       this.tableFields.push(rowFields);   
@@ -281,7 +281,7 @@ export class CargaColComponent implements OnInit {
     this.tableHeaders.push("Apellido Materno");
     this.tableHeaders.push("Tipo Documento Id");
     this.tableHeaders.push("Celular");  
-    this.tableHeaders.push("Cuenta Nequi");
+    //this.tableHeaders.push("Cuenta Nequi");
     this.tableHeaders.push("Número Documento ID")
     this.tableHeaders.push("Observaciones");
 

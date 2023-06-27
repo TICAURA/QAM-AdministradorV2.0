@@ -220,7 +220,7 @@ public class CargaColombiaService {
 		    	colaboradorRes.setSegundoApellido(detCargaItem.getSegundoApellido());
 		    	colaboradorRes.setTipoDocumentoId(detCargaItem.getTipoDocumentoId());
 		    	colaboradorRes.setCelular(detCargaItem.getCelular());
-		    	colaboradorRes.setCuentaNequi(detCargaItem.getCuentaNequi());
+		    	//colaboradorRes.setCuentaNequi(detCargaItem.getCuentaNequi());
 		    	colaboradorRes.setNumeroDocumentoId(detCargaItem.getNumeroDocumentoId());
 		    	switch (detCargaItem.getIdEstatusCarga()) {
 		    	case -3: colaboradorRes.setObservacioCarga("El Documento de Identificación ya se encuentra registrado como clabeBancaria");
@@ -492,7 +492,7 @@ public class CargaColombiaService {
 	    logger.info("/**** Persistio AuxCarga ****/");
 	    for (DetCargaNequi detCarga : listaDetCarga) {
 	      logger.info("/**** Carga masiva item :: "+detCarga.getNombre()+" :: "+cargarAuxBD.getIdCargaMasiva());
-
+	      detCarga.setCuentaNequi("1");
 	      detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
 	      
 	      detCargaNequiRepository.save(detCarga);
@@ -502,7 +502,7 @@ public class CargaColombiaService {
 	    
 	    String rfcCargaNequi = detCargaNequiRepository.getNit(cargarAuxBD.getIdCargaMasiva());
 	    logger.info("RFC CARGA NEqui: " + rfcCargaNequi);
-	    detCargaNequiRepository.callFunctionNequi(cargarAuxBD.getIdCargaMasiva(),RFC_CARGA_NEQUI);
+	    detCargaNequiRepository.callFunctionNequi(cargarAuxBD.getIdCargaMasiva(),rfcCargaNequi);
 	    
 	    return generaResponseNequi(cargarAuxBD.getIdCargaMasiva());
 	  }
@@ -642,15 +642,18 @@ public class CargaColombiaService {
 				detCargaFila.setNumeroDocumentoId(contenidoCelda);
 				break;
 			case 6:
+				if (contenidoCelda.charAt(0) != '+') {
+					contenidoCelda = '+' + contenidoCelda;
+				}
 				detCargaFila.setCelular(contenidoCelda);
 				break;
 			case 7:
 				detCargaFila.setEmail(contenidoCelda);
 				break;
-			case 8:
+			/*case 8:
 				detCargaFila.setCuentaNequi(contenidoCelda);
-				break;
-			case 9:
+				break;*/
+			case 8:
 				SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yy");
 				SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yy");
 				Date fechaDate = inputFormat.parse(contenidoCelda);
@@ -658,31 +661,32 @@ public class CargaColombiaService {
 				Date auxDate = outputFormat.parse(fechaN);
 				detCargaFila.setFechaNacimiento(auxDate);
 				break;
-			case 10:
+			case 9:
 				detCargaFila.setGenero(contenidoCelda);
 				break;
-			case 11:
+			case 10:
 				detCargaFila.setPeriodicidad(String.valueOf(contenidoCelda.charAt(0)));
 				break;
-			case 12:
+			case 11:
 				String salario = contenidoCelda.replaceAll("[,]", "");
 				detCargaFila.setSalarioDiario(Double.valueOf(salario));
 				break;
-			case 13:
+			case 12:
 				detCargaFila.setAreaPosicion(removeAccentAndNumbers(contenidoCelda));
 				break;
-			case 14:
+			case 13:
 				detCargaFila.setTipoContrato(removeAccentAndNumbers(contenidoCelda));
 				break;
-			case 15:
+			case 14:
 				detCargaFila.setCEstado(Integer.valueOf(getValue(contenidoCelda)));
 				break;
-			case 16:
+			case 15:
+				
 				detCargaFila.setIdBancoNequi(Integer.valueOf(getValue(contenidoCelda)));
 				break;
-			case 17:
+			case 16:
 				detCargaFila.setIdTipoCuentaBanco(Integer.valueOf(getValue(contenidoCelda)));
-			case 18:
+			case 17:
 				detCargaFila.setNumCuentaBanco(contenidoCelda);
 				break;
 			
