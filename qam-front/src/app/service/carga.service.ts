@@ -24,8 +24,34 @@ export class CargaService {
     
   }
 
+  insertColb(rootUrl:Endpoint,body:FormData,successCallback:any,errorCallback:any){
+    
+    const endpoint:string = rootUrl + "/cargaColaborador";
+    const method:string = 'POST';
+    const jsonBody:FormData = body;
+    
+    this.httpSenderService.makeHttpRequestForm(endpoint,method,successCallback,errorCallback,jsonBody);
+    
+  }
+
+  insertUser(rootUrl:Endpoint,body:FormData,successCallback:any,errorCallback:any){
+    
+    const endpoint:string = rootUrl + "/cargaNequi";
+    const method:string = 'POST';
+    const jsonBody:FormData = body;
+    
+    this.httpSenderService.makeHttpRequestForm(endpoint,method,successCallback,errorCallback,jsonBody);
+    
+  }
+
   getAll(rootUrl: Endpoint, getSuccess: any, errorCallback: any, idCarga:number) {
     const endpoint: string = rootUrl + "/procesados"+ `/${idCarga}`;
+    const method: string = 'GET';
+    this.httpSenderService.makeHttpRequest(endpoint, method, getSuccess, errorCallback, undefined);
+  }
+
+  getAllNequi(rootUrl: Endpoint, getSuccess: any, errorCallback: any, idCarga:number) {
+    const endpoint: string = rootUrl + "/procesados-nequi"+ `/${idCarga}`;
     const method: string = 'GET';
     this.httpSenderService.makeHttpRequest(endpoint, method, getSuccess, errorCallback, undefined);
   }

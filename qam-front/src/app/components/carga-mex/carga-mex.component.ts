@@ -12,6 +12,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppModule } from 'src/app/app.module';
 import { Content } from '@angular/compiler/src/render3/r3_ast';
 import { cargaMex } from 'src/app/model/cargaMex';
+import { GenericService } from 'src/app/service/generic.service';
 
 @Component({
   selector: 'app-carga-mex',
@@ -20,17 +21,21 @@ import { cargaMex } from 'src/app/model/cargaMex';
 })
 export class CargaMexComponent implements OnInit {
 
-  
-  constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService){
+  showContenido: boolean = false;
+  errorMessage: Errors;
+  constructor(private router:Router, private cargaService : CargaService, private rest:HttpSenderService, private genericService: GenericService){
     
   }
 
   ngOnInit(): void {
+
+    this.genericService.getAll(Endpoint.CARGACOL ,this.getAllSuccess,this.callFailure);
     this.files = new Carga();
     this.files.idCarga = 0;
     const date = new Date()
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
     this.tittle = ("Layout_cargaMX"+dateStr);
+    
   }
 
   correcto = 0;
@@ -38,15 +43,16 @@ export class CargaMexComponent implements OnInit {
   procesados = 0;
   files: Carga;
   typeEndpoint:Endpoint = Endpoint.CARGAMEX;
-  getAllSuccess: any;
-  callFailure: any;
+  //getAllSuccess: any;
+  //callFailure: any;
   tableFields:Array<Array<string>>;
   tableHeaders: Array<string>;
   tableName: String = "Tabla de registros";
   tittle:string;
-
+  
+  private getAllSuccess = (content: any): void => {this.showContenido = true;}
   private callFailureShowMessage = (content:any,error:Errors) :void =>{alert(error);} 
-
+  private callFailure = (content: any, error: Errors): void => { this.showContenido = false; this.errorMessage = error; }
   
   
   onSearch(){

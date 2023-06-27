@@ -8,11 +8,13 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -33,17 +35,25 @@ import org.springframework.stereotype.Service;
 
 import com.aura.admin.adminqamm.dao.CargaColombiaDao;
 import com.aura.admin.adminqamm.dto.CargaMasivaDto;
+import com.aura.admin.adminqamm.dto.CargaMasivaUserDto;
 import com.aura.admin.adminqamm.dto.ClienteDto;
 import com.aura.admin.adminqamm.dto.ColaboradorDto;
 import com.aura.admin.adminqamm.dto.ResponseCargaColombiaDto;
+import com.aura.admin.adminqamm.dto.ResponseCargaNequiDto;
+import com.aura.admin.adminqamm.dto.UsuarioDto;
 import com.aura.admin.adminqamm.dto.request.CargaRequestDto;
 import com.aura.admin.adminqamm.exception.BusinessException;
 import com.aura.admin.adminqamm.model.AuxCarga;
+import com.aura.admin.adminqamm.model.AuxCargaNequi;
 import com.aura.admin.adminqamm.model.Cliente;
 import com.aura.admin.adminqamm.model.DetCarga;
+import com.aura.admin.adminqamm.model.DetCargaNequi;
+import com.aura.admin.adminqamm.repository.AuxCargaNequiRepository;
 import com.aura.admin.adminqamm.repository.AuxCargaRepository;
 import com.aura.admin.adminqamm.repository.ClientRepository;
+import com.aura.admin.adminqamm.repository.DetCargaNequiRepository;
 import com.aura.admin.adminqamm.repository.DetCargaRepository;
+import com.aura.admin.adminqamm.util.PermitionENUM;
 
 @Service
 public class CargaColombiaService {
@@ -54,7 +64,13 @@ public class CargaColombiaService {
 	private AuxCargaRepository auxCargaRepository;
 	
 	@Autowired
+	private AuxCargaNequiRepository auxCargaNequiRepository;
+	
+	@Autowired
 	private DetCargaRepository detCargaRepository;
+	
+	@Autowired
+	private DetCargaNequiRepository detCargaNequiRepository;
 	
 	@Autowired
 	private CargaColombiaDao cargaColombiaDao;
@@ -62,7 +78,12 @@ public class CargaColombiaService {
 	@Autowired
 	private ClientRepository clienteRepository;
 	
+	@Autowired
+    private PermissionService permissionService;
+	
 	private static final String RFC_CARGA_COLOMBIA = "AAA010101AA1";
+	
+	private static final String RFC_CARGA_NEQUI = "NIT";
 	
 	private static final String SITUACION_CARGA_D = "D";
 	
@@ -70,34 +91,11 @@ public class CargaColombiaService {
 	
 	private static final String SITUACION_CARGA_E = "E";
 	
+	private static final Integer[] SITUACION_CARGA_OK = {1, 2};
 	
-    public HSSFWorkbook obtenerWorkBook(int loggedIdUser) throws BusinessException{
-    	
-    	CellStyle style = null;
-    	
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet();
-        workbook.setSheetName(0, "Layout Colombia");
-            
-        String[] headers = new String[] { "name", "father_last_name", "mother_last_name",
-                "email", "plate", "phone_number","document_number", "amount"};
-        HSSFRow headerRow = sheet.createRow(0);
-        
-        style = workbook.createCellStyle();// Create style
-        style.setBorderBottom(BorderStyle.MEDIUM);
-        style.setBorderTop(BorderStyle.MEDIUM);
-        style.setBorderRight(BorderStyle.MEDIUM);
-        style.setBorderLeft(BorderStyle.MEDIUM);
-        
-        for (int i = 0; i < headers.length; ++i) {
-            String header = headers[i];
-            HSSFCell cell = headerRow.createCell(i);
-            cell.setCellValue(header);
-            cell.setCellStyle(style);
-        }
-        return workbook;
-        
-    }
+	private static final Integer[] SITUACION_CARGA_ERR = {-1, -2, -3};
+	
+	
 	
 	public ResponseCargaColombiaDto insertCargaColombia(int loggedIdUser, CargaRequestDto cargaColombia) throws BusinessException {
 		
@@ -135,6 +133,44 @@ public class CargaColombiaService {
 		logger.info("/**** Informacion cargada correctamente  ****/");
 		return responseCargaColombiaDto;
 	}
+	
+	
+	public ResponseCargaNequiDto insertCargaNequi(int loggedIdUser, CargaRequestDto cargaColombia) throws BusinessException {
+		
+		ResponseCargaNequiDto responseCargaNequiDto = null;
+		if (logger.isInfoEnabled()) {
+			logger.info("/**** Procesa archivo carga masiva nequi  ****/" + cargaColombia.getArchivo().getOriginalFilename());
+		}
+		
+		try {
+			if (cargaColombia.getArchivo().getInputStream()==null) {
+				throw new BusinessException("Archivo vacio", 401);
+			}
+		
+			String nombreArchivo = cargaColombia.getArchivo().getOriginalFilename();
+			
+			String hashName = getBytesOfMd5(cargaColombia.getArchivo().getInputStream());
+			
+			if (auxCargaNequiRepository.findFileByHash(hashName)!= null) {
+				logger.info("/**El archivo: "+cargaColombia.getArchivo().getOriginalFilename()+" ya existe.**/");
+				throw new BusinessException("El archivo ya se ha procesado previamente :: ", 406);
+				
+			}
+			
+			if (nombreArchivo.endsWith(".xlsx")) {
+				responseCargaNequiDto = procesarXlsxUser(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
+			} else if (nombreArchivo.endsWith(".xls")) {
+				responseCargaNequiDto = procesarXlsUser(cargaColombia.getArchivo().getInputStream(), nombreArchivo, hashName);
+			} else {
+				throw new BusinessException("Error formato incorrecto.", 406);
+			}
+		} catch (IOException | NoSuchAlgorithmException e) {
+			logger.error("ERROR al leer el archivo para la carga masiva colombia :: ",e.getMessage());
+		}
+		
+		logger.info("/**** Informacion cargada correctamente  ****/");
+		return responseCargaNequiDto;
+	}
 
 	public List<ColaboradorDto> obetenerResgistrosProcesados(Integer idCargaMasiva) throws BusinessException {
 		List<ColaboradorDto> colaboradores = new ArrayList<ColaboradorDto>();
@@ -160,6 +196,47 @@ public class CargaColombiaService {
 		    	clienteRes.setRazon(clienteColombia.getRazon());
 		    	colaboradorRes.setClienteDto(clienteRes);
 		      
+		    	colaboradores.add(colaboradorRes);
+		}
+		   
+		return colaboradores;
+	}
+	
+	public List<UsuarioDto> obetenerResgistrosNequiProcesados(Integer idCargaMasiva) throws BusinessException {
+		List<UsuarioDto> colaboradores = new ArrayList<UsuarioDto>();
+	    
+		if(idCargaMasiva==null) {
+			throw new BusinessException("El id de la carga es requerido", 401);
+		}
+		
+	    //Cliente clienteColombia = clienteRepository.getByRfc(RFC_CARGA_COLOMBIA);
+	    List<DetCargaNequi> detCargaList = detCargaNequiRepository.getByIdCargaMasiva(idCargaMasiva);
+	    
+	    for (DetCargaNequi detCargaItem : detCargaList) {
+		    	UsuarioDto colaboradorRes = new UsuarioDto();
+		      
+		    	colaboradorRes.setNombre(detCargaItem.getNombre());
+		    	colaboradorRes.setPrimerApellido(detCargaItem.getPrimerApellido());
+		    	colaboradorRes.setSegundoApellido(detCargaItem.getSegundoApellido());
+		    	colaboradorRes.setTipoDocumentoId(detCargaItem.getTipoDocumentoId());
+		    	colaboradorRes.setCelular(detCargaItem.getCelular());
+		    	//colaboradorRes.setCuentaNequi(detCargaItem.getCuentaNequi());
+		    	colaboradorRes.setNumeroDocumentoId(detCargaItem.getNumeroDocumentoId());
+		    	switch (detCargaItem.getIdEstatusCarga()) {
+		    	case -3: colaboradorRes.setObservacioCarga("El Documento de Identificación ya se encuentra registrado como clabeBancaria");
+		    		break;
+		    	case -2: colaboradorRes.setObservacioCarga("El número telefónico no cumple con el formato");
+		    		break;
+		    	case -1: colaboradorRes.setObservacioCarga("El trabajador ya se encuentra registrado");
+		    		break;
+		    	case 1: colaboradorRes.setObservacioCarga("Registro nuevo");
+		    		break;
+		    	case 2: colaboradorRes.setObservacioCarga("Registro cargado exitosamente ");
+		    		break;
+		    	default:
+					break;
+		    	}
+		    	logger.info("/**** Descripcion :: "+detCargaItem.getObservacionCarga());
 		    	colaboradores.add(colaboradorRes);
 		}
 		   
@@ -221,6 +298,7 @@ public class CargaColombiaService {
 		return cargaMasiva(listaDetCarga, nombreArchivo, hashName);
 	}
 
+
 	private ResponseCargaColombiaDto procesarXlsx(InputStream inputStream, String nombreArchivo, String hashName) {
 		List<CargaMasivaDto> listaCargaDTO = new ArrayList<CargaMasivaDto>();
 		
@@ -276,6 +354,115 @@ public class CargaColombiaService {
 		return cargaMasiva(listaDetCarga, nombreArchivo, hashName);	
 	}
 	
+	private ResponseCargaNequiDto procesarXlsxUser(InputStream inputStream, String nombreArchivo, String hashName) {
+		List<CargaMasivaUserDto> listaCargaDTO = new ArrayList<CargaMasivaUserDto>();
+		
+		List<DetCargaNequi> listaDetCarga = new ArrayList<DetCargaNequi>();
+		
+		try {
+	        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+		    Sheet firstSheet = workbook.getSheetAt(0);
+		    Iterator iterator = firstSheet.iterator();
+		        	        
+		    DataFormatter formatter = new DataFormatter();
+		   
+		    while (iterator.hasNext()) {
+		    	
+		    	DetCargaNequi detCargaFila = new DetCargaNequi();
+		    	
+	        	Row nextRow = (Row) iterator.next();
+	            Iterator cellIterator = nextRow.cellIterator();
+	            
+	            if (nextRow.getRowNum()>0) {
+	            	CargaMasivaUserDto cargaMasivaUserDTO = new CargaMasivaUserDto();			            
+	            	cargaMasivaUserDTO.setFila(nextRow.getRowNum());
+	            	
+		            while(cellIterator.hasNext()) {
+			           	Cell cell = (Cell) cellIterator.next();
+			            String contenidoCelda = formatter.formatCellValue(cell);
+			      
+			            int numCelda = cell.getColumnIndex();
+			            
+			            logger.info("celda: " + contenidoCelda+" :: INDEX "+numCelda);
+			            
+			            caseFilaUser(numCelda, detCargaFila, contenidoCelda, cargaMasivaUserDTO);
+			            
+			                   		            
+		            }
+		            
+		            listaDetCarga.add(detCargaFila);
+	            	
+		            if (cargaMasivaUserDTO.getErrores().isEmpty()) {
+		            	cargaMasivaUserDTO.setProcesar(Boolean.TRUE);
+			        } else {
+			        	cargaMasivaUserDTO.setProcesar(Boolean.FALSE);
+			        }	
+		            listaCargaDTO.add(cargaMasivaUserDTO);
+	            }	            
+	        }	            
+		} catch (IOException e) {			
+			e.printStackTrace();
+		} 
+		
+		return cargaMasivaNequi(listaDetCarga, nombreArchivo, hashName);
+	}
+	
+	
+	private ResponseCargaNequiDto procesarXlsUser(InputStream inputStream, String nombreArchivo, String hashName) {
+		List<CargaMasivaUserDto> listaCargaDTO = new ArrayList<CargaMasivaUserDto>();
+		
+		List<DetCargaNequi> listaDetCarga = new ArrayList<DetCargaNequi>();
+		
+		
+		try {
+	        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+		    Sheet firstSheet = workbook.getSheetAt(0);
+		    Iterator iterator = firstSheet.iterator();
+		        	        
+		    DataFormatter formatter = new DataFormatter();
+		   
+		    while (iterator.hasNext()) {
+		    	
+		    	DetCargaNequi detCargaFila = new DetCargaNequi();
+		    	
+	        	Row nextRow = (Row) iterator.next();
+	            Iterator cellIterator = nextRow.cellIterator();
+	            
+	            if (nextRow.getRowNum()>0) {
+	            	CargaMasivaUserDto cargaMasivaUserDTO = new CargaMasivaUserDto();			            
+	            	cargaMasivaUserDTO.setFila(nextRow.getRowNum());
+	            	
+		            while(cellIterator.hasNext()) {
+			           	Cell cell = (Cell) cellIterator.next();
+			            String contenidoCelda = formatter.formatCellValue(cell);
+			      
+			            int numCelda = cell.getColumnIndex();
+			            
+			            logger.info("celda: " + contenidoCelda+" :: INDEX "+numCelda);
+			            
+			            caseFilaUser(numCelda, detCargaFila, contenidoCelda, cargaMasivaUserDTO);
+			            
+			                   		            
+		            }
+		            
+		            listaDetCarga.add(detCargaFila);
+		            
+		            if (cargaMasivaUserDTO.getErrores().isEmpty()) {
+		            	cargaMasivaUserDTO.setProcesar(Boolean.TRUE);
+			        } else {
+			        	cargaMasivaUserDTO.setProcesar(Boolean.FALSE);
+			        }
+		            listaCargaDTO.add(cargaMasivaUserDTO);
+	            }	            
+	        }	            
+		} catch (IOException e) {			
+			e.printStackTrace();
+		} 
+		
+		return cargaMasivaNequi(listaDetCarga, nombreArchivo, hashName);
+	}
+	
+	
 	private ResponseCargaColombiaDto cargaMasiva(List<DetCarga> listaDetCarga, String nombreArchivo, String hashName ) {
 	    
 	    AuxCarga cargarAuxBD = cargarAuxBD(nombreArchivo, hashName);
@@ -297,6 +484,28 @@ public class CargaColombiaService {
 	    
 	    return generaResponse(cargarAuxBD.getIdCargaMasiva());
 	  }
+	
+	private ResponseCargaNequiDto cargaMasivaNequi(List<DetCargaNequi> listaDetCarga, String nombreArchivo, String hashName ) {
+	    
+	    AuxCargaNequi cargarAuxBD = cargarAuxNequiBD(nombreArchivo, hashName);
+	    auxCargaNequiRepository.save(cargarAuxBD);
+	    logger.info("/**** Persistio AuxCarga ****/");
+	    for (DetCargaNequi detCarga : listaDetCarga) {
+	      logger.info("/**** Carga masiva item :: "+detCarga.getNombre()+" :: "+cargarAuxBD.getIdCargaMasiva());
+	      detCarga.setCuentaNequi("1");
+	      detCarga.setIdCargaMasiva(cargarAuxBD.getIdCargaMasiva());
+	      
+	      detCargaNequiRepository.save(detCarga);
+	      logger.info("/**** Persistio DetCarga ****/");
+	    }
+	    
+	    
+	    String rfcCargaNequi = detCargaNequiRepository.getNit(cargarAuxBD.getIdCargaMasiva());
+	    logger.info("RFC CARGA NEqui: " + rfcCargaNequi);
+	    detCargaNequiRepository.callFunctionNequi(cargarAuxBD.getIdCargaMasiva(),rfcCargaNequi);
+	    
+	    return generaResponseNequi(cargarAuxBD.getIdCargaMasiva());
+	  }
 
 	  private ResponseCargaColombiaDto generaResponse(Integer idCargaMasiva) {
 	    
@@ -316,9 +525,40 @@ public class CargaColombiaService {
 	  
 	    return responseCarga;
 	  }
+	  
+	  private ResponseCargaNequiDto generaResponseNequi(Integer idCargaMasiva) {
+		    
+		  	ResponseCargaNequiDto responseCarga = new ResponseCargaNequiDto();
+		    
+		    Integer exitosos = detCargaNequiRepository.countSituacionExito(idCargaMasiva, SITUACION_CARGA_OK[0],SITUACION_CARGA_OK[1]);
+		      
+		    Integer fallidos = detCargaNequiRepository.countSituacionError(idCargaMasiva, SITUACION_CARGA_ERR[0], SITUACION_CARGA_ERR[1], SITUACION_CARGA_ERR[2]);
+		   
+		    responseCarga.setExitosos(exitosos);
+		    responseCarga.setFallidos(fallidos);
+		    responseCarga.setProcesados(exitosos+fallidos);
+		    responseCarga.setIdCargaMasiva(idCargaMasiva);
+		    
+		    logger.info("/**** Exitosos :: "+responseCarga.getExitosos());
+		    logger.info("/**** Fallidos :: "+responseCarga.getFallidos());
+		  
+		    return responseCarga;
+	  }
 
-	private AuxCarga cargarAuxBD(String nombreArchivo, String hashName) {
+	  private AuxCarga cargarAuxBD(String nombreArchivo, String hashName) {
 		AuxCarga auxCargaBD = new AuxCarga();
+		
+		auxCargaBD.setFechaAlta(new Date());
+		auxCargaBD.setNombreArchivo(nombreArchivo);
+		auxCargaBD.setHash(hashName);
+			
+		logger.info("/**** Cargo datos auxiliar ****/");
+		return auxCargaBD;
+			
+	}
+	
+	private AuxCargaNequi cargarAuxNequiBD(String nombreArchivo, String hashName) {
+		AuxCargaNequi auxCargaBD = new AuxCargaNequi();
 		
 		auxCargaBD.setFechaAlta(new Date());
 		auxCargaBD.setNombreArchivo(nombreArchivo);
@@ -375,8 +615,118 @@ public class CargaColombiaService {
 					.append(", columna ").append(numColumna+1);
 				cargaMasivaDTO.getErrores().add(errorStr.toString());
 			}	
+	}
+	
+	
+	private void caseFilaUser (int numColumna, DetCargaNequi detCargaFila, String contenidoCelda, CargaMasivaUserDto cargaMasivaUserDTO) {
+		
+		
+		try {
+			switch (numColumna) {
+			case 0:
+				detCargaFila.setNit(contenidoCelda);
+				break;
+			case 1:
+				detCargaFila.setNombre(removeAccentAndNumbers(contenidoCelda));
+				break;
+			case 2:
+				detCargaFila.setPrimerApellido(removeAccentAndNumbers(contenidoCelda));
+				break;
+			case 3:
+				detCargaFila.setSegundoApellido(removeAccentAndNumbers(contenidoCelda));
+				break;
+			case 4:
+				detCargaFila.setTipoDocumentoId(getValue(contenidoCelda));
+				break;
+			case 5:
+				detCargaFila.setNumeroDocumentoId(contenidoCelda);
+				break;
+			case 6:
+				if (contenidoCelda.charAt(0) != '+') {
+					contenidoCelda = '+' + contenidoCelda;
+				}
+				detCargaFila.setCelular(contenidoCelda);
+				break;
+			case 7:
+				detCargaFila.setEmail(contenidoCelda);
+				break;
+			/*case 8:
+				detCargaFila.setCuentaNequi(contenidoCelda);
+				break;*/
+			case 8:
+				SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yy");
+				SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yy");
+				Date fechaDate = inputFormat.parse(contenidoCelda);
+				String fechaN = outputFormat.format(fechaDate); 
+				Date auxDate = outputFormat.parse(fechaN);
+				detCargaFila.setFechaNacimiento(auxDate);
+				break;
+			case 9:
+				detCargaFila.setGenero(contenidoCelda);
+				break;
+			case 10:
+				detCargaFila.setPeriodicidad(String.valueOf(contenidoCelda.charAt(0)));
+				break;
+			case 11:
+				String salario = contenidoCelda.replaceAll("[,]", "");
+				detCargaFila.setSalarioDiario(Double.valueOf(salario));
+				break;
+			case 12:
+				detCargaFila.setAreaPosicion(removeAccentAndNumbers(contenidoCelda));
+				break;
+			case 13:
+				detCargaFila.setTipoContrato(removeAccentAndNumbers(contenidoCelda));
+				break;
+			case 14:
+				detCargaFila.setCEstado(Integer.valueOf(getValue(contenidoCelda)));
+				break;
+			case 15:
+				
+				detCargaFila.setIdBancoNequi(Integer.valueOf(getValue(contenidoCelda)));
+				break;
+			case 16:
+				detCargaFila.setIdTipoCuentaBanco(Integer.valueOf(getValue(contenidoCelda)));
+			case 17:
+				detCargaFila.setNumCuentaBanco(contenidoCelda);
+				break;
+			
+			default:
+				break;
+	        }
+		} catch (NumberFormatException e) {
+			logger.error(" No es un valor tipo numero :: ");
+			StringBuilder errorStr = new StringBuilder();
+			errorStr.append("ERROR al formatear numero en la fila ")
+				.append(cargaMasivaUserDTO.getFila().intValue()+1)
+				.append(", columna ").append(numColumna+1);
+			cargaMasivaUserDTO.getErrores().add(errorStr.toString());
+		} catch (Exception e) {
+			logger.error(" Error generico :: ");
+			StringBuilder errorStr = new StringBuilder();
+			errorStr.append("Se present� un error inesperado. Por favor valide los datos ")
+				.append(cargaMasivaUserDTO.getFila().intValue()+1)
+				.append(", columna ").append(numColumna+1);
+			cargaMasivaUserDTO.getErrores().add(errorStr.toString());
 		}
 
+	}
+	
+	
+	public static String removeAccentAndNumbers(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        String withoutAccents = pattern.matcher(normalized).replaceAll("").replaceAll("[^\\p{ASCII}]", "");
+        String upper = withoutAccents.replaceAll("[^a-zA-Z\\s]", "");
+        return upper.toUpperCase();
+    }
+	
+	public static String getValue(String cadena) {
+        int indiceInicio = cadena.indexOf('(');
+        int indiceFin = cadena.indexOf(')', indiceInicio + 1);
+
+        return (indiceInicio != -1 && indiceFin != -1) ? cadena.substring(indiceInicio + 1, indiceFin) : null;
+    }
+	
 	public static String getBytesOfMd5(InputStream is) throws IOException, NoSuchAlgorithmException {
 		
 
@@ -399,5 +749,18 @@ public class CargaColombiaService {
         return hexHash;
             
 	    
+	}
+	
+	public List<DetCarga> getUsers(int loggedUser) throws BusinessException {
+
+        if(!permissionService.validatePermition(loggedUser, PermitionENUM.SUDO.getId(),PermitionENUM.USUARIOS_ADMINISTRADOR.getId(),PermitionENUM.USUARIOS_VER.getId())){
+            throw new BusinessException("El usuario no tiene acceso a esta información.",401);
+        }
+
+        List<DetCarga> usuarios = detCargaRepository.findAll();
+        
+
+        return usuarios;
+    
 	}
 }
